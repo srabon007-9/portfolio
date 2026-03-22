@@ -157,11 +157,3 @@ function About() {
 }
 
 export default About;
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-export default About;
