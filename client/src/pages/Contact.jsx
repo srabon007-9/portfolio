@@ -34,8 +34,14 @@ function Contact() {
     setSuccess(false);
 
     try {
+      const apiBaseUrl = process.env.REACT_APP_API_URL;
+
+      if (!apiBaseUrl) {
+        throw new Error('REACT_APP_API_URL is not configured');
+      }
+
       // Send form data to backend API
-      await axios.post(`${process.env.REACT_APP_API_URL}/api/contact`, formData);
+      await axios.post(`${apiBaseUrl}/api/contact`, formData);
 
       // Show success message
       setSuccess(true);
@@ -52,7 +58,15 @@ function Contact() {
       setTimeout(() => setSuccess(false), 5000);
     } catch (err) {
       console.error('Error sending message:', err);
-      setError('Failed to send message. Please try again.');
+      const serverMessage = err?.response?.data?.message;
+
+      if (serverMessage) {
+        setError(serverMessage);
+      } else if (err?.message === 'REACT_APP_API_URL is not configured') {
+        setError('Contact service is not configured yet.');
+      } else {
+        setError('Failed to send message. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
