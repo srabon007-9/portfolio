@@ -12,13 +12,13 @@ function About() {
         <div className="mb-6 rounded-xl border border-slate-800 bg-slate-900 p-8">
           <h2 className="mb-4 text-2xl font-semibold text-slate-100">Who I Am</h2>
           <p className="mb-4 leading-relaxed text-slate-400">
-            I'm a passionate full-stack developer with expertise in the MERN stack (MongoDB, Express,
-            React, Node.js). I love building web applications that are not only functional but also
-            beautiful and user-friendly.
+            Hello! I am <span className="font-medium text-slate-200">Sheikh Srabon Ahmed</span>. I am a
+            Computer Science student at <span className="font-medium text-slate-200">BRAC University</span>{' '}
+            and I enjoy building clean, modern web applications with the MERN stack.
           </p>
           <p className="leading-relaxed text-slate-400">
-            When I'm not coding, you can find me learning new technologies, contributing to open-source
-            projects, or exploring the great outdoors.
+            Outside of coding, I love travelling on my bike and exploring new places. I am always excited
+            to learn new technologies and improve my development skills.
           </p>
         </div>
 
@@ -56,6 +56,48 @@ function About() {
               <h3 className="text-lg font-medium text-slate-100">Bachelor of Science in Computer Science</h3>
               <p className="text-sm text-slate-500">BRAC University | 2024 - 2028</p>
             </div>
+          </div>
+        </div>
+
+        {/* Social Links */}
+        <div className="mt-6 rounded-xl border border-slate-800 bg-slate-900 p-8">
+          <h2 className="mb-6 text-2xl font-semibold text-slate-100">Find Me Online</h2>
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+            <a
+              href="https://www.facebook.com/Srabon.Ahmed22/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-md border border-slate-700 bg-slate-950 px-4 py-3 text-sm font-medium text-slate-200 transition-all hover:border-cyan-300/50 hover:text-cyan-200"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
+                <path d="M13.5 9H16V6h-2.5C10.8 6 9 7.8 9 10.5V13H6v3h3v6h3v-6h3l1-3h-4v-2.5c0-.8.7-1.5 1.5-1.5Z" />
+              </svg>
+              Facebook
+            </a>
+
+            <a
+              href="https://www.instagram.com/srabon_op/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-md border border-slate-700 bg-slate-950 px-4 py-3 text-sm font-medium text-slate-200 transition-all hover:border-cyan-300/50 hover:text-cyan-200"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
+                <path d="M7 2h10a5 5 0 0 1 5 5v10a5 5 0 0 1-5 5H7a5 5 0 0 1-5-5V7a5 5 0 0 1 5-5Zm0 2a3 3 0 0 0-3 3v10a3 3 0 0 0 3 3h10a3 3 0 0 0 3-3V7a3 3 0 0 0-3-3H7Zm5 3.5A4.5 4.5 0 1 1 7.5 12 4.5 4.5 0 0 1 12 7.5Zm0 2A2.5 2.5 0 1 0 14.5 12 2.5 2.5 0 0 0 12 9.5Zm4.75-2.75a1.25 1.25 0 1 1-1.25 1.25 1.25 1.25 0 0 1 1.25-1.25Z" />
+              </svg>
+              Instagram
+            </a>
+
+            <a
+              href="https://www.linkedin.com/in/sheikh-srabon-ahmed/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-center gap-2 rounded-md border border-slate-700 bg-slate-950 px-4 py-3 text-sm font-medium text-slate-200 transition-all hover:border-cyan-300/50 hover:text-cyan-200"
+            >
+              <svg viewBox="0 0 24 24" aria-hidden="true" className="h-4 w-4 fill-current">
+                <path d="M5 3a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm-1.5 6h3V21h-3V9ZM10 9h2.9v1.7h.1c.4-.8 1.4-1.9 3-1.9 3.2 0 3.8 2.1 3.8 4.8V21h-3v-6.5c0-1.5 0-3.5-2.1-3.5s-2.4 1.7-2.4 3.4V21h-3V9Z" />
+              </svg>
+              LinkedIn
+            </a>
           </div>
         </div>
       </div>
