@@ -59,9 +59,12 @@ function Contact() {
     } catch (err) {
       console.error('Error sending message:', err);
       const serverMessage = err?.response?.data?.message;
+      const statusCode = err?.response?.status;
 
       if (serverMessage) {
         setError(serverMessage);
+      } else if (statusCode === 408) {
+        setError('Contact server timed out (408). This usually means backend cannot connect to MongoDB Atlas. Please check backend environment variables and Atlas Network Access.');
       } else if (err?.code === 'ERR_NETWORK') {
         setError('Cannot reach contact server. Please check backend deployment, CORS, and API URL settings.');
       } else if (err?.message === 'REACT_APP_API_URL is not configured') {

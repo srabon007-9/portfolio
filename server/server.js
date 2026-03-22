@@ -54,11 +54,6 @@ app.use(express.json());
 // Parse incoming form data
 app.use(express.urlencoded({ extended: true }));
 
-// Connect to MongoDB
-connectDB().catch((error) => {
-  console.error('Database connection failed:', error.message);
-});
-
 // API Routes
 // /api/user routes
 app.use('/api/user', userRoutes);
@@ -68,6 +63,20 @@ app.use('/api/projects', projectRoutes);
 
 // /api/contact routes
 app.use('/api/contact', contactRoutes);
+
+// DB health route (useful for deployment diagnostics)
+app.get('/api/health/db', async (req, res) => {
+  try {
+    await connectDB();
+    return res.status(200).json({ ok: true, db: 'connected' });
+  } catch (error) {
+    return res.status(503).json({
+      ok: false,
+      db: 'disconnected',
+      message: error?.message || 'Database connection failed',
+    });
+  }
+});
 
 // Basic route to check if server is running
 app.get('/', (req, res) => {
