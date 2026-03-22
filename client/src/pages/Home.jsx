@@ -5,6 +5,7 @@ import LoadingSpinner from '../components/LoadingSpinner';
 import TechOrbit from '../components/TechOrbit';
 import LiveCodePreview from '../components/LiveCodePreview';
 import SectionReveal from '../components/SectionReveal';
+import TerminalSection from '../components/TerminalSection';
 
 // Home page - Landing page of the portfolio
 function Home() {
@@ -262,6 +263,17 @@ function Home() {
             ))}
           </div>
         </div>
+      </SectionReveal>
+
+      <SectionReveal className="px-4 py-16">
+        <div className="mx-auto mb-8 max-w-6xl">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-cyan-300">Interactive Terminal</p>
+          <h3 className="mb-3 text-2xl font-bold text-slate-100">Explore my profile through commands</h3>
+          <p className="max-w-3xl text-slate-400">
+            Try commands like <span className="font-mono text-cyan-300">help</span>, <span className="font-mono text-cyan-300">about</span>, <span className="font-mono text-cyan-300">skills</span>, and <span className="font-mono text-cyan-300">hack</span>.
+          </p>
+        </div>
+        <TerminalSection />
       </SectionReveal>
 
       {/* Error message if any */}
