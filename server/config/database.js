@@ -23,9 +23,9 @@ const connectDB = async () => {
     // Connect to MongoDB using the connection string from .env file
     // Fail fast to avoid serverless function timeouts.
     connectionPromise = mongoose.connect(process.env.MONGODB_URI, {
-      serverSelectionTimeoutMS: 5000,
-      connectTimeoutMS: 5000,
-      socketTimeoutMS: 15000,
+      serverSelectionTimeoutMS: 2500,
+      connectTimeoutMS: 2500,
+      socketTimeoutMS: 8000,
       maxPoolSize: 10,
     });
 

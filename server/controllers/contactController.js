@@ -45,8 +45,13 @@ exports.createContactMessage = async (req, res) => {
       message,
     });
 
-    // Save to the database
-    const savedContact = await contact.save();
+    // Save to the database with timeout guard to avoid 408s
+    const savedContact = await Promise.race([
+      contact.save(),
+      new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('CONTACT_SAVE_TIMEOUT')), 5000)
+      ),
+    ]);
 
     res.status(201).json({
       message: 'Your message has been sent successfully!',
@@ -62,6 +67,12 @@ exports.createContactMessage = async (req, res) => {
     if (error?.name === 'MongooseServerSelectionError' || error?.name === 'MongoServerSelectionError') {
       return res.status(503).json({
         message: 'Contact service is temporarily unavailable. Cannot connect to database.',
+      });
+    }
+
+    if (error?.message === 'CONTACT_SAVE_TIMEOUT') {
+      return res.status(503).json({
+        message: 'Contact service timed out while saving. Please try again in a moment.',
       });
     }
 
