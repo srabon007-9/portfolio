@@ -11,6 +11,7 @@ function AdminPanel() {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [actionLoadingId, setActionLoadingId] = useState('');
+  const [bulkLoading, setBulkLoading] = useState(false);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('all');
@@ -137,6 +138,56 @@ function AdminPanel() {
     }
   };
 
+  const markAsUnread = async (id) => {
+    if (!apiBaseUrl || !adminKey) return;
+
+    setActionLoadingId(id);
+    setError('');
+
+    try {
+      await axios.patch(
+        `${apiBaseUrl}/api/contact/${id}/unread`,
+        {},
+        {
+          headers: {
+            'x-admin-key': adminKey,
+          },
+        }
+      );
+
+      setMessages((prev) => prev.map((msg) => (msg._id === id ? { ...msg, isRead: false } : msg)));
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Failed to mark message as unread.');
+    } finally {
+      setActionLoadingId('');
+    }
+  };
+
+  const markAllAsRead = async () => {
+    if (!apiBaseUrl || !adminKey || stats.unread === 0) return;
+
+    setBulkLoading(true);
+    setError('');
+
+    try {
+      await axios.patch(
+        `${apiBaseUrl}/api/contact/read-all`,
+        {},
+        {
+          headers: {
+            'x-admin-key': adminKey,
+          },
+        }
+      );
+
+      setMessages((prev) => prev.map((msg) => ({ ...msg, isRead: true })));
+    } catch (err) {
+      setError(err?.response?.data?.message || 'Failed to mark all as read.');
+    } finally {
+      setBulkLoading(false);
+    }
+  };
+
   const deleteMessage = async (id) => {
     if (!apiBaseUrl || !adminKey) return;
 
@@ -177,6 +228,14 @@ function AdminPanel() {
               className="rounded-lg border border-slate-700 px-4 py-2 text-sm font-medium text-slate-300 transition-all hover:border-slate-500"
             >
               Refresh
+            </button>
+            <button
+              type="button"
+              onClick={markAllAsRead}
+              disabled={bulkLoading || stats.unread === 0}
+              className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 px-4 py-2 text-sm font-semibold text-emerald-300 transition-all hover:bg-emerald-500/20 disabled:opacity-50"
+            >
+              {bulkLoading ? 'Marking...' : 'Read All'}
             </button>
             <button
               type="button"
@@ -321,7 +380,7 @@ function AdminPanel() {
                   </div>
 
                   <div className="flex flex-wrap gap-2">
-                    {!selectedMessage.isRead && (
+                    {!selectedMessage.isRead ? (
                       <button
                         type="button"
                         onClick={() => markAsRead(selectedMessage._id)}
@@ -329,6 +388,15 @@ function AdminPanel() {
                         className="rounded-lg border border-emerald-400/40 bg-emerald-500/10 px-3 py-2 text-xs font-semibold text-emerald-300 transition-all hover:bg-emerald-500/20 disabled:opacity-60"
                       >
                         {actionLoadingId === selectedMessage._id ? 'Updating...' : 'Mark as Read'}
+                      </button>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => markAsUnread(selectedMessage._id)}
+                        disabled={actionLoadingId === selectedMessage._id}
+                        className="rounded-lg border border-amber-400/40 bg-amber-500/10 px-3 py-2 text-xs font-semibold text-amber-300 transition-all hover:bg-amber-500/20 disabled:opacity-60"
+                      >
+                        {actionLoadingId === selectedMessage._id ? 'Updating...' : 'Mark as Unread'}
                       </button>
                     )}
 

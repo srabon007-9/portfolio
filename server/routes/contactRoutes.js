@@ -7,6 +7,8 @@ const {
   getContactMessages,
   createContactMessage,
   markAsRead,
+  markAsUnread,
+  markAllAsRead,
   deleteContactMessage,
 } = require('../controllers/contactController');
 const { requireAdminKey } = require('../middleware/adminAuth');
@@ -20,6 +22,12 @@ router.post('/', createContactMessage);
 
 // PATCH /api/contact/:id/read - Mark a message as read
 router.patch('/:id/read', requireAdminKey, markAsRead);
+
+// PATCH /api/contact/:id/unread - Mark a message as unread
+router.patch('/:id/unread', requireAdminKey, markAsUnread);
+
+// PATCH /api/contact/read-all - Mark all messages as read
+router.patch('/read-all', requireAdminKey, markAllAsRead);
 
 // DELETE /api/contact/:id - Delete a contact message
 router.delete('/:id', requireAdminKey, deleteContactMessage);

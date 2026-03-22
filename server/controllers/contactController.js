@@ -137,6 +137,47 @@ exports.markAsRead = async (req, res) => {
   }
 };
 
+// @desc    Mark a message as unread
+// @route   PATCH /api/contact/:id/unread
+// @access  Public (In production, only admin should access this)
+exports.markAsUnread = async (req, res) => {
+  try {
+    await connectDB();
+
+    const contact = await Contact.findByIdAndUpdate(
+      req.params.id,
+      { isRead: false },
+      { new: true }
+    );
+
+    if (!contact) {
+      return res.status(404).json({ message: 'Message not found' });
+    }
+
+    res.status(200).json({ message: 'Message marked as unread', contact });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating message', error: error.message });
+  }
+};
+
+// @desc    Mark all messages as read
+// @route   PATCH /api/contact/read-all
+// @access  Public (In production, only admin should access this)
+exports.markAllAsRead = async (req, res) => {
+  try {
+    await connectDB();
+
+    const result = await Contact.updateMany({ isRead: false }, { $set: { isRead: true } });
+
+    res.status(200).json({
+      message: 'All messages marked as read',
+      modifiedCount: result.modifiedCount || 0,
+    });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating messages', error: error.message });
+  }
+};
+
 // @desc    Delete a contact message
 // @route   DELETE /api/contact/:id
 // @access  Public (In production, only admin should access this)
