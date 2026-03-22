@@ -58,17 +58,19 @@ function Projects() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-12">
+    <div className="min-h-screen px-4 py-24">
       <div className="mx-auto max-w-5xl">
-        {/* Page Title */}
-        <h1 className="mb-3 text-center text-4xl font-semibold text-slate-100 md:text-5xl">
-          My Projects
-        </h1>
+        {/* Page Header */}
+        <div className="mb-16 text-center">
+          <h1 className="mb-4 text-5xl md:text-6xl font-bold tracking-tight text-slate-100">
+            Featured Projects
+          </h1>
 
-        {/* Subtitle */}
-        <p className="mb-10 text-center text-base text-slate-400 md:text-lg">
-          A simple list of my work.
-        </p>
+          {/* Subtitle */}
+          <p className="text-lg text-slate-400 max-w-2xl mx-auto">
+            A selection of projects that demonstrate my skills in building modern, responsive web applications. Each project showcases different aspects of full-stack development and problem-solving.
+          </p>
+        </div>
 
         {/* Error message if any */}
         {error && (

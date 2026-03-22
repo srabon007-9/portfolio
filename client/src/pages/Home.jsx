@@ -64,136 +64,102 @@ function Home() {
   }
 
   return (
-    <div className="min-h-screen px-4 py-16">
-      <div className="mx-auto w-full max-w-4xl">
-        {/* Hero Section */}
-        <div className="neo-card animate-slide-up rounded-2xl p-8 text-center md:p-12">
-          {/* Greeting */}
-          <h1 className="mb-3 text-4xl font-semibold text-slate-100 md:text-5xl">
-            Welcome to my world
+    <div className="min-h-screen w-full">
+      {/* Hero Section */}
+      <section className="relative overflow-hidden px-4 py-24 md:py-32">
+        {/* Background gradient */}
+        <div className="absolute inset-0 -z-10">
+          <div className="absolute top-0 left-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-cyan-500/5 blur-3xl" />
+          <div className="absolute bottom-1/4 right-0 h-80 w-80 rounded-full bg-purple-500/5 blur-3xl" />
+        </div>
+
+        <div className="mx-auto max-w-4xl text-center">
+          {/* Tech Badges */}
+          <div className="mb-8 flex flex-wrap justify-center gap-2">
+            {['React', 'JavaScript', 'Tailwind CSS'].map((tech) => (
+              <span key={tech} className="rounded-full border border-cyan-300/30 bg-cyan-400/5 px-3 py-1 text-xs font-medium text-cyan-300">
+                {tech}
+              </span>
+            ))}
+          </div>
+
+          {/* Main Heading */}
+          <h1 className="mb-4 text-5xl md:text-7xl font-bold tracking-tight text-slate-100">
+            {displayName}
           </h1>
 
-          {/* Name */}
-          <h2 className="text-gradient mb-4 text-2xl font-semibold md:text-3xl">
-            I am {displayName}
+          {/* Role */}
+          <h2 className="mb-6 text-xl md:text-2xl font-semibold text-cyan-300">
+            Frontend Developer & Computer Science Student
           </h2>
 
-          {/* Bio */}
-          {user && user.bio && (
-            <p className="mx-auto mb-8 max-w-2xl text-base leading-relaxed text-slate-400 md:text-lg">
-              {user.bio}
-            </p>
-          )}
+          {/* Value Statement */}
+          <p className="mx-auto mb-4 max-w-2xl text-base md:text-lg leading-relaxed text-slate-400">
+            I build fast, accessible, and user-friendly web applications using modern technologies like React and Tailwind.
+          </p>
+          
+          <p className="mx-auto mb-8 max-w-2xl text-base text-slate-500">
+            Focused on writing clean code, performance, and real-world problem solving.
+          </p>
+
+          {/* Availability Badge */}
+          <div className="mb-8 inline-block rounded-full border border-green-300/30 bg-green-400/5 px-4 py-2">
+            <span className="flex items-center gap-2 text-sm font-medium text-green-300">
+              <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+              Open to internships & opportunities
+            </span>
+          </div>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a
               href="/projects"
-              className="btn-future rounded-md px-6 py-3 text-sm font-medium text-slate-100"
+              className="group relative inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-8 py-3 text-sm font-semibold text-white transition-all hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:scale-105"
             >
               View My Work
+              <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
             </a>
             <a
               href="/contact"
-              className="rounded-md border border-purple-300/50 bg-purple-400/10 px-6 py-3 text-sm font-medium text-purple-200 transition-all hover:shadow-[0_0_28px_rgba(168,85,247,0.3)]"
+              className="rounded-lg border border-slate-600 bg-slate-900/50 px-8 py-3 text-sm font-semibold text-slate-200 transition-all hover:border-slate-400 hover:bg-slate-800/50"
             >
-              Get In Touch
+              Contact Me
+            </a>
+            <a
+              href="#"
+              className="rounded-lg border border-slate-600 bg-slate-900/50 px-8 py-3 text-sm font-semibold text-slate-200 transition-all hover:border-slate-400 hover:bg-slate-800/50"
+            >
+              Download CV
             </a>
           </div>
         </div>
+      </section>
 
-        {/* Stats Section */}
-        <div className="mt-12 grid grid-cols-1 gap-4 md:grid-cols-3">
-          {[
-            { number: '5+', label: 'Projects Built', icon: '📁' },
-            { number: '100%', label: 'Dedicated', icon: '⚡' },
-            { number: '∞', label: 'Passionate', icon: '🚀' },
-          ].map((stat, index) => (
-            <div
-              key={index}
-              className="neo-card rounded-xl p-6 text-center transition-all hover:shadow-lg"
-            >
-              <div className="text-3xl mb-2">{stat.icon}</div>
-              <div className="text-2xl font-bold text-cyan-400 mb-1">{stat.number}</div>
-              <div className="text-sm text-slate-400">{stat.label}</div>
-            </div>
-          ))}
-        </div>
-
-        {/* What I Do Section */}
-        <div className="neo-card mt-12 animate-fade-in rounded-2xl p-8">
-          <h2 className="mb-6 text-2xl font-semibold text-slate-100">What I Do</h2>
-          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+      {/* Quick Facts Section */}
+      <section className="px-4 py-16">
+        <div className="mx-auto max-w-4xl">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-4">
             {[
-              {
-                title: 'Frontend Development',
-                description: 'Build modern, responsive web applications with React and Tailwind CSS. Focus on user experience and smooth interactions.',
-                icon: '🎨',
-              },
-              {
-                title: 'Backend Development',
-                description: 'Create robust APIs and server logic with Node.js and Express. Ensure scalability and optimal performance.',
-                icon: '⚙️',
-              },
-              {
-                title: 'Database Design',
-                description: 'Design and manage MongoDB databases. Implement efficient data models and queries for your applications.',
-                icon: '💾',
-              },
-              {
-                title: 'Full-Stack Solutions',
-                description: 'Develop complete web applications from concept to deployment. End-to-end solutions using MERN stack.',
-                icon: '🌐',
-              },
-            ].map((service, index) => (
-              <div
-                key={index}
-                className="rounded-lg border border-slate-700 bg-slate-950/50 p-6 transition-all hover:border-purple-400/50 hover:bg-slate-950/80"
-              >
-                <div className="text-3xl mb-3">{service.icon}</div>
-                <h3 className="font-semibold text-slate-100 mb-2">{service.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{service.description}</p>
+              { label: 'Location', value: 'Bangladesh' },
+              { label: 'Education', value: 'CS Student' },
+              { label: 'Status', value: 'Available Now' },
+              { label: 'Focus', value: 'Frontend Dev' },
+            ].map((fact, index) => (
+              <div key={index} className="rounded-lg border border-slate-800 bg-slate-900/50 p-6 text-center">
+                <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">{fact.label}</div>
+                <div className="text-lg font-semibold text-slate-100">{fact.value}</div>
               </div>
             ))}
           </div>
         </div>
+      </section>
 
-        {/* Skills Section */}
-        <div className="neo-card mt-12 animate-fade-in rounded-2xl p-8">
-          <h2 className="mb-6 text-xl font-semibold text-slate-100">Technical Skills</h2>
-          <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
-            {['JavaScript', 'React', 'Node.js', 'MongoDB', 'Express', 'HTML/CSS', 'Tailwind CSS', 'Git', 'REST APIs'].map((skill, index) => (
-              <div
-                key={index}
-                className="rounded-md border border-slate-700 bg-slate-950/80 p-3 text-center text-sm text-slate-300 transition-all hover:-translate-y-1 hover:border-cyan-300/50 hover:text-cyan-200"
-              >
-                {skill}
-              </div>
-            ))}
-          </div>
+      {/* Error message if any */}
+      {error && (
+        <div className="mx-auto max-w-4xl px-4 mb-6 rounded-lg border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+          {error}
         </div>
-
-        {/* CTA Section */}
-        <div className="neo-card mt-12 animate-fade-in rounded-2xl p-8 md:p-12 text-center bg-gradient-to-r from-purple-900/20 to-cyan-900/20">
-          <h2 className="mb-4 text-2xl font-semibold text-slate-100">Ready to Collaborate?</h2>
-          <p className="mb-6 text-slate-400 max-w-2xl mx-auto">
-            I'm always interested in hearing about new projects and opportunities. Whether you have a question or want to work together, feel free to reach out!
-          </p>
-          <a
-            href="/contact"
-            className="inline-block btn-future rounded-md px-8 py-3 text-base font-medium text-slate-100 transition-all hover:scale-105"
-          >
-            Start a Conversation
-          </a>
-        </div>
-
-        {/* Error message if any */}
-        {error && (
-          <div className="mt-6 rounded-md border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
-            {error}
-          </div>
-        )}
-      </div>
+      )}
     </div>
   );
 }
