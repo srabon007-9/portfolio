@@ -13,6 +13,7 @@ function Home() {
   const [error, setError] = useState(null);
 
   const displayName = user?.name?.trim() || 'Srabon Ahmed';
+  const isProduction = process.env.NODE_ENV === 'production';
 
   // useEffect runs when component mounts
   useEffect(() => {
@@ -40,7 +41,11 @@ function Home() {
       setError(null);
     } catch (err) {
       console.error('Error fetching user:', err);
-      setError('Failed to load user data. Check backend URL and Vercel environment variables.');
+      setError(
+        isProduction
+          ? null
+          : 'Failed to load user data. Check backend URL and Vercel environment variables.'
+      );
       // Set dummy data if API fails (for demo purposes)
       setUser({
         name: 'Srabon Ahmed',
