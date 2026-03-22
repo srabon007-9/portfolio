@@ -20,12 +20,25 @@ function Home() {
   // Function to fetch user data from the backend API
   const fetchUserData = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/user`);
-      setUser(response.data);
+      const apiBaseUrl = process.env.REACT_APP_API_URL;
+
+      if (!apiBaseUrl) {
+        throw new Error('REACT_APP_API_URL is not configured');
+      }
+
+      const response = await axios.get(`${apiBaseUrl}/api/user`);
+      const userData = response.data;
+
+      // Validate expected response shape
+      if (!userData || typeof userData !== 'object' || Array.isArray(userData) || !userData.name) {
+        throw new Error('Invalid user response from API');
+      }
+
+      setUser(userData);
       setError(null);
     } catch (err) {
       console.error('Error fetching user:', err);
-      setError('Failed to load user data');
+      setError('Failed to load user data. Check backend URL and Vercel environment variables.');
       // Set dummy data if API fails (for demo purposes)
       setUser({
         name: 'Your Name',
