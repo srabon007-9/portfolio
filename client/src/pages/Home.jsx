@@ -18,6 +18,7 @@ function Home() {
   // useEffect runs when component mounts
   useEffect(() => {
     fetchUserData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Function to fetch user data from the backend API
@@ -126,8 +127,9 @@ function Home() {
               Contact Me
             </a>
             <a
-              href="#"
-              className="rounded-lg border border-slate-600 bg-slate-900/50 px-8 py-3 text-sm font-semibold text-slate-200 transition-all hover:border-slate-400 hover:bg-slate-800/50"
+              href="/"
+              onClick={(e) => e.preventDefault()}
+              className="rounded-lg border border-slate-600 bg-slate-900/50 px-8 py-3 text-sm font-semibold text-slate-200 transition-all hover:border-slate-400 hover:bg-slate-800/50 cursor-pointer"
             >
               Download CV
             </a>
