@@ -1,5 +1,6 @@
 // Import the Project model
 const Project = require('../models/Project');
+const connectDB = require('../config/database');
 
 // Controller functions handle the business logic for project routes
 
@@ -8,6 +9,8 @@ const Project = require('../models/Project');
 // @access  Public
 exports.getProjects = async (req, res) => {
   try {
+    await connectDB();
+
     // Find all projects and sort them by creation date (newest first)
     const projects = await Project.find().sort({ createdAt: -1 });
 
@@ -22,6 +25,8 @@ exports.getProjects = async (req, res) => {
 // @access  Public
 exports.getProjectById = async (req, res) => {
   try {
+    await connectDB();
+
     const project = await Project.findById(req.params.id);
 
     if (!project) {
@@ -39,6 +44,8 @@ exports.getProjectById = async (req, res) => {
 // @access  Public (In production, you should add authentication)
 exports.createProject = async (req, res) => {
   try {
+    await connectDB();
+
     // Destructure the data from the request body
     const { title, description, techStack, githubLink, liveLink, imageUrl } = req.body;
 
@@ -73,6 +80,8 @@ exports.createProject = async (req, res) => {
 // @access  Public (In production, you should add authentication)
 exports.updateProject = async (req, res) => {
   try {
+    await connectDB();
+
     const { id } = req.params;
     const { title, description, techStack, githubLink, liveLink, imageUrl } = req.body;
 
@@ -98,6 +107,8 @@ exports.updateProject = async (req, res) => {
 // @access  Public (In production, you should add authentication)
 exports.deleteProject = async (req, res) => {
   try {
+    await connectDB();
+
     const project = await Project.findByIdAndDelete(req.params.id);
 
     if (!project) {

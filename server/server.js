@@ -24,6 +24,8 @@ const allowedOrigins = [
   process.env.CLIENT_URL,
   process.env.FRONTEND_URL,
   'http://localhost:3000',
+  'https://srabon.me',
+  'https://www.srabon.me',
   ...extraOrigins,
 ].filter(Boolean);
 

@@ -1,5 +1,6 @@
 // Import the User model
 const User = require('../models/User');
+const connectDB = require('../config/database');
 
 // Controller functions handle the business logic for user routes
 
@@ -8,6 +9,8 @@ const User = require('../models/User');
 // @access  Public
 exports.getUser = async (req, res) => {
   try {
+    await connectDB();
+
     // Find the first user (portfolio usually has one profile)
     const user = await User.findOne();
 
@@ -26,6 +29,8 @@ exports.getUser = async (req, res) => {
 // @access  Public (In production, you should add authentication)
 exports.createOrUpdateUser = async (req, res) => {
   try {
+    await connectDB();
+
     // Destructure the data from the request body
     const { name, email, bio, profilePicture } = req.body;
 
