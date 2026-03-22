@@ -14,6 +14,7 @@ import About from './pages/About';
 import Skills from './pages/Skills';
 import Projects from './pages/Projects';
 import Contact from './pages/Contact';
+import AdminInbox from './pages/AdminInbox';
 
 // Main App component
 function App() {
@@ -59,6 +60,7 @@ function App() {
             <Route path="/skills" element={<Skills />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/admin/inbox" element={<AdminInbox />} />
           </Routes>
         </div>
       </main>
