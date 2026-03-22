@@ -64,6 +64,12 @@ exports.createContactMessage = async (req, res) => {
       });
     }
 
+    if (error?.message?.includes('querySrv EBADNAME') || error?.message?.includes('_mongodb._tcp')) {
+      return res.status(503).json({
+        message: 'Contact service is temporarily unavailable. Invalid MongoDB URI host in backend environment.',
+      });
+    }
+
     if (error?.name === 'MongooseServerSelectionError' || error?.name === 'MongoServerSelectionError') {
       return res.status(503).json({
         message: 'Contact service is temporarily unavailable. Cannot connect to database.',
