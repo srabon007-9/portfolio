@@ -41,6 +41,7 @@ function Navbar() {
           <div className="hidden md:flex gap-1">
             <DesktopNavLink to="/" label="Home" />
             <DesktopNavLink to="/about" label="About" />
+            <DesktopNavLink to="/skills" label="Skills" />
             <DesktopNavLink to="/projects" label="Projects" />
             <DesktopNavLink to="/contact" label="Contact" />
           </div>
@@ -70,6 +71,7 @@ function Navbar() {
           <div className="md:hidden pb-4 space-y-2 animate-fade-in">
             <MobileNavLink to="/" label="Home" onClick={() => setIsOpen(false)} />
             <MobileNavLink to="/about" label="About" onClick={() => setIsOpen(false)} />
+            <MobileNavLink to="/skills" label="Skills" onClick={() => setIsOpen(false)} />
             <MobileNavLink to="/projects" label="Projects" onClick={() => setIsOpen(false)} />
             <MobileNavLink to="/contact" label="Contact" onClick={() => setIsOpen(false)} />
           </div>
