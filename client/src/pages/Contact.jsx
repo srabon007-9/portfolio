@@ -207,10 +207,10 @@ function Contact() {
                 <div>
                   <div className="text-xs font-semibold uppercase tracking-wide text-slate-500 mb-2">Email</div>
                   <a
-                    href="mailto:your.email@example.com"
+                    href="mailto:srabonahmed2002@gmail.com"
                     className="text-cyan-400 hover:text-cyan-300 transition-colors font-medium break-all"
                   >
-                    your.email@example.com
+                    srabonahmed2002@gmail.com
                   </a>
                 </div>
 
