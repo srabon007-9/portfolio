@@ -14,37 +14,15 @@ const contactRoutes = require('./routes/contactRoutes');
 // Initialize Express app
 const app = express();
 
-// Allowed frontend origins (local + deployed)
-const extraOrigins = (process.env.ALLOWED_ORIGINS || '')
-  .split(',')
-  .map((value) => value.trim())
-  .filter(Boolean);
-
-const allowedOrigins = [
-  process.env.CLIENT_URL,
-  process.env.FRONTEND_URL,
-  'http://localhost:3000',
-  'https://srabon.me',
-  'https://www.srabon.me',
-  ...extraOrigins,
-].filter(Boolean);
-
 // Middleware
 // Allow requests from frontend (CORS)
 app.use(
   cors({
     origin(origin, callback) {
-      // Allow non-browser requests (e.g., curl, Postman)
+      // Public portfolio API: allow all origins, including previews and custom domains.
+      // This prevents browser-side ERR_NETWORK caused by strict origin mismatches.
       if (!origin) return callback(null, true);
-
-      const isAllowedExplicit = allowedOrigins.includes(origin);
-      const isVercelPreview = origin.endsWith('.vercel.app');
-
-      if (isAllowedExplicit || isVercelPreview) {
-        return callback(null, true);
-      }
-
-      return callback(new Error('Not allowed by CORS'));
+      return callback(null, true);
     },
     credentials: true,
   })
