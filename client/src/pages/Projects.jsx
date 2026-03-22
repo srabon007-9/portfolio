@@ -22,7 +22,8 @@ function Projects() {
   const fetchProjects = async () => {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects`);
-      setProjects(response.data);
+      const projectList = Array.isArray(response.data) ? response.data : [];
+      setProjects(projectList);
       setError(null);
     } catch (err) {
       console.error('Error fetching projects:', err);
@@ -79,8 +80,8 @@ function Projects() {
         {/* Projects Grid */}
         {projects && projects.length > 0 ? (
           <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-            {projects.map((project) => (
-              <ProjectCard key={project._id} project={project} />
+            {projects.map((project, index) => (
+              <ProjectCard key={project?._id || `${project?.title || 'project'}-${index}`} project={project} />
             ))}
           </div>
         ) : (
