@@ -62,10 +62,12 @@ function Contact() {
 
       if (serverMessage) {
         setError(serverMessage);
+      } else if (err?.code === 'ERR_NETWORK') {
+        setError('Cannot reach contact server. Please check backend deployment, CORS, and API URL settings.');
       } else if (err?.message === 'REACT_APP_API_URL is not configured') {
         setError('Contact service is not configured yet.');
       } else {
-        setError('Failed to send message. Please try again later.');
+        setError(`Failed to send message. ${err?.message || 'Please try again later.'}`);
       }
     } finally {
       setLoading(false);

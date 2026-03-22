@@ -15,9 +15,16 @@ const contactRoutes = require('./routes/contactRoutes');
 const app = express();
 
 // Allowed frontend origins (local + deployed)
+const extraOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map((value) => value.trim())
+  .filter(Boolean);
+
 const allowedOrigins = [
   process.env.CLIENT_URL,
+  process.env.FRONTEND_URL,
   'http://localhost:3000',
+  ...extraOrigins,
 ].filter(Boolean);
 
 // Middleware
