@@ -1,6 +1,7 @@
 // Import the Contact model
 const Contact = require('../models/Contact');
 const connectDB = require('../config/database');
+const { sendContactNotificationEmail } = require('../utils/emailService');
 
 // Controller functions handle the business logic for contact routes
 
@@ -53,9 +54,25 @@ exports.createContactMessage = async (req, res) => {
       ),
     ]);
 
+    // Send notification email after successful save (does not fail the request if email fails)
+    let notificationSent = false;
+    try {
+      const emailResult = await sendContactNotificationEmail({
+        name,
+        email,
+        subject,
+        message,
+        createdAt: savedContact?.createdAt,
+      });
+      notificationSent = Boolean(emailResult?.sent);
+    } catch (emailError) {
+      console.error('Contact notification email failed:', emailError?.message || emailError);
+    }
+
     res.status(201).json({
       message: 'Your message has been sent successfully!',
       contact: savedContact,
+      notificationSent,
     });
   } catch (error) {
     if (error?.message?.includes('MONGODB_URI is not configured')) {
