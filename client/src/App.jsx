@@ -5,6 +5,8 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 // Import components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import MouseGlow from './components/MouseGlow';
+import CustomCursor from './components/CustomCursor';
 
 // Import pages
 import Home from './pages/Home';
@@ -36,12 +38,17 @@ function App() {
 
   return (
     <Router>
+      <MouseGlow />
+      <CustomCursor />
+
       {/* Navbar appears on every page */}
       <Navbar />
 
       {/* Main content area - Routes define which page to show */}
       <main className="parallax-scene bg-grid relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
         <div className="pointer-events-none absolute inset-0 -z-10">
+          <div className="animated-grid-overlay" />
+          <div className="floating-particles" />
           <div className="orb orb-cyan" />
           <div className="orb orb-purple" />
         </div>

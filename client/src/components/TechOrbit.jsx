@@ -1,0 +1,35 @@
+function TechOrbit() {
+  const orbitItems = [
+    { name: 'React', short: '⚛', delay: '0s' },
+    { name: 'Node.js', short: '🟢', delay: '-2.2s' },
+    { name: 'MongoDB', short: '🍃', delay: '-4.4s' },
+    { name: 'Express', short: 'Ex', delay: '-6.6s' },
+    { name: 'Python', short: 'Py', delay: '-8.8s' },
+  ];
+
+  return (
+    <div className="tech-orbit-wrapper">
+      <div className="tech-orbit-center">
+        <span className="text-xs uppercase tracking-[0.2em] text-cyan-300/80">Core Stack</span>
+        <p className="mt-2 text-sm font-semibold text-slate-100">MERN + Python</p>
+      </div>
+
+      <div className="tech-orbit-ring" aria-hidden="true" />
+
+      {orbitItems.map((item, index) => (
+        <div
+          key={item.name}
+          className="tech-orbit-path"
+          style={{ animationDelay: item.delay, transform: `rotate(${index * 72}deg)` }}
+        >
+          <div className="tech-orbit-item" title={item.name}>
+            <span>{item.short}</span>
+            <span className="tech-orbit-tooltip">{item.name}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
+export default TechOrbit;
