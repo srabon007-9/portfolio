@@ -15,6 +15,7 @@ import Skills from './pages/Skills';
 import Projects from './pages/Projects';
 import Contact from './pages/Contact';
 import AdminInbox from './pages/AdminInbox';
+import AdminPanel from './pages/AdminPanel';
 
 // Main App component
 function App() {
@@ -60,6 +61,7 @@ function App() {
             <Route path="/skills" element={<Skills />} />
             <Route path="/projects" element={<Projects />} />
             <Route path="/contact" element={<Contact />} />
+            <Route path="/admin" element={<AdminPanel />} />
             <Route path="/admin/inbox" element={<AdminInbox />} />
           </Routes>
         </div>
