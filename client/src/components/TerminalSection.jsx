@@ -54,7 +54,18 @@ function TerminalSection() {
   const timeoutRefs = useRef([]);
 
   const commandSuggestions = useMemo(
-    () => ['help', 'about', 'skills', 'projects', 'contact', 'hack', 'clear'],
+    () => [
+      'help',
+      'about',
+      'skills',
+      'projects',
+      'contact',
+      'hack',
+      'matrix',
+      'joke',
+      'mission',
+      'clear',
+    ],
     []
   );
 
@@ -98,6 +109,23 @@ function TerminalSection() {
     setIsBusy(false);
   };
 
+  const runMatrixSequence = async () => {
+    setIsBusy(true);
+    const lines = [
+      'Initializing quantum rendering engine...',
+      'Spawning neon matrix stream █▓▒░ ...',
+      'Signal lock acquired at 99.7%',
+      'Future mode enabled. Welcome, operator.',
+    ];
+
+    for (const line of lines) {
+      appendLine({ type: 'output', text: line });
+      await sleepWithTracking(520, timeoutRefs);
+    }
+
+    setIsBusy(false);
+  };
+
   const executeCommand = async (rawCommand) => {
     const command = rawCommand.toLowerCase();
 
@@ -105,7 +133,7 @@ function TerminalSection() {
       case 'help':
         appendLine({
           type: 'output',
-          text: 'Available commands: help, about, skills, projects, contact, clear, hack',
+          text: 'Available commands: help, about, skills, projects, contact, hack, matrix, joke, mission, clear',
         });
         break;
       case 'about':
@@ -131,6 +159,21 @@ function TerminalSection() {
         break;
       case 'hack':
         await runHackSequence();
+        break;
+      case 'matrix':
+        await runMatrixSequence();
+        break;
+      case 'joke':
+        appendLine({
+          type: 'output',
+          text: 'Why do developers love dark mode? Because light attracts bugs. 🐞',
+        });
+        break;
+      case 'mission':
+        appendLine({
+          type: 'output',
+          text: 'Mission: Build reliable, accessible products. Current focus: MERN architecture, DSA consistency, and backend systems design.',
+        });
         break;
       case 'clear':
         setHistory([]);
