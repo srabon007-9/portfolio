@@ -59,6 +59,12 @@ exports.createContactMessage = async (req, res) => {
       });
     }
 
+    if (error?.name === 'MongooseServerSelectionError' || error?.name === 'MongoServerSelectionError') {
+      return res.status(503).json({
+        message: 'Contact service is temporarily unavailable. Cannot connect to database.',
+      });
+    }
+
     res.status(500).json({
       message: 'Error sending message',
       error: process.env.NODE_ENV === 'production' ? undefined : error.message,
