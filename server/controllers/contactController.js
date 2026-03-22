@@ -1,5 +1,6 @@
 // Import the Contact model
 const Contact = require('../models/Contact');
+const connectDB = require('../config/database');
 
 // Controller functions handle the business logic for contact routes
 
@@ -8,6 +9,8 @@ const Contact = require('../models/Contact');
 // @access  Public (In production, only admin should access this)
 exports.getContactMessages = async (req, res) => {
   try {
+    await connectDB();
+
     // Find all messages and sort by newest first
     const messages = await Contact.find().sort({ createdAt: -1 });
 
@@ -22,6 +25,8 @@ exports.getContactMessages = async (req, res) => {
 // @access  Public
 exports.createContactMessage = async (req, res) => {
   try {
+    await connectDB();
+
     // Destructure the data from the request body
     const { name, email, subject, message } = req.body;
 
@@ -48,7 +53,16 @@ exports.createContactMessage = async (req, res) => {
       contact: savedContact,
     });
   } catch (error) {
-    res.status(500).json({ message: 'Error sending message', error: error.message });
+    if (error?.message?.includes('MONGODB_URI is not configured')) {
+      return res.status(503).json({
+        message: 'Contact service is temporarily unavailable. Database is not configured.',
+      });
+    }
+
+    res.status(500).json({
+      message: 'Error sending message',
+      error: process.env.NODE_ENV === 'production' ? undefined : error.message,
+    });
   }
 };
 
@@ -57,6 +71,8 @@ exports.createContactMessage = async (req, res) => {
 // @access  Public (In production, only admin should access this)
 exports.markAsRead = async (req, res) => {
   try {
+    await connectDB();
+
     const contact = await Contact.findByIdAndUpdate(
       req.params.id,
       { isRead: true },
@@ -78,6 +94,8 @@ exports.markAsRead = async (req, res) => {
 // @access  Public (In production, only admin should access this)
 exports.deleteContactMessage = async (req, res) => {
   try {
+    await connectDB();
+
     const contact = await Contact.findByIdAndDelete(req.params.id);
 
     if (!contact) {
