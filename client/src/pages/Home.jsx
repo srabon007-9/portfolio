@@ -12,6 +12,8 @@ function Home() {
   // State to track errors
   const [error, setError] = useState(null);
 
+  const displayName = user?.name?.trim() || 'Srabon Ahmed';
+
   // useEffect runs when component mounts
   useEffect(() => {
     fetchUserData();
@@ -41,7 +43,7 @@ function Home() {
       setError('Failed to load user data. Check backend URL and Vercel environment variables.');
       // Set dummy data if API fails (for demo purposes)
       setUser({
-        name: 'Your Name',
+        name: 'Srabon Ahmed',
         email: 'your.email@example.com',
         bio: 'Full-stack developer passionate about building amazing web applications.',
       });
@@ -67,11 +69,9 @@ function Home() {
           </h1>
 
           {/* Name */}
-          {user && (
-            <h2 className="text-gradient mb-4 text-2xl font-semibold md:text-3xl">
-              I'm {user.name}
-            </h2>
-          )}
+          <h2 className="text-gradient mb-4 text-2xl font-semibold md:text-3xl">
+            I am {displayName}
+          </h2>
 
           {/* Bio */}
           {user && user.bio && (
