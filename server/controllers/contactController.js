@@ -56,6 +56,7 @@ exports.createContactMessage = async (req, res) => {
 
     // Send notification email after successful save (does not fail the request if email fails)
     let notificationSent = false;
+    let notificationReason = null;
     try {
       const emailResult = await sendContactNotificationEmail({
         name,
@@ -65,14 +66,21 @@ exports.createContactMessage = async (req, res) => {
         createdAt: savedContact?.createdAt,
       });
       notificationSent = Boolean(emailResult?.sent);
+      notificationReason = emailResult?.reason || null;
+
+      if (!notificationSent && emailResult?.errorMessage) {
+        console.error('Contact notification detail:', emailResult.errorMessage);
+      }
     } catch (emailError) {
       console.error('Contact notification email failed:', emailError?.message || emailError);
+      notificationReason = 'SMTP_SEND_FAILED';
     }
 
     res.status(201).json({
       message: 'Your message has been sent successfully!',
       contact: savedContact,
       notificationSent,
+      notificationReason,
     });
   } catch (error) {
     if (error?.message?.includes('MONGODB_URI is not configured')) {

@@ -51,35 +51,43 @@ const sendContactNotificationEmail = async ({ name, email, subject, message, cre
   const safeMessage = escapeHtml(message).replace(/\n/g, '<br/>');
   const submittedAt = createdAt ? new Date(createdAt).toISOString() : new Date().toISOString();
 
-  await transporter.sendMail({
-    from: `Portfolio Contact <${fromAddress}>`,
-    to: recipient,
-    replyTo: email,
-    subject: subjectLine,
-    text: [
-      'You received a new portfolio contact message:',
-      `Name: ${name}`,
-      `Email: ${email}`,
-      `Subject: ${subject || 'No subject'}`,
-      `Submitted At: ${submittedAt}`,
-      '',
-      message,
-    ].join('\n'),
-    html: `
-      <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #0f172a;">
-        <h2 style="margin: 0 0 12px;">New Portfolio Contact Message</h2>
-        <p style="margin: 0 0 8px;"><strong>Name:</strong> ${safeName}</p>
-        <p style="margin: 0 0 8px;"><strong>Email:</strong> ${safeEmail}</p>
-        <p style="margin: 0 0 8px;"><strong>Subject:</strong> ${safeSubject}</p>
-        <p style="margin: 0 0 8px;"><strong>Submitted At:</strong> ${escapeHtml(submittedAt)}</p>
-        <hr style="margin: 14px 0; border: none; border-top: 1px solid #e2e8f0;" />
-        <p style="margin: 0;"><strong>Message:</strong></p>
-        <p style="margin: 8px 0 0; white-space: pre-wrap;">${safeMessage}</p>
-      </div>
-    `,
-  });
+  try {
+    await transporter.sendMail({
+      from: `Portfolio Contact <${fromAddress}>`,
+      to: recipient,
+      replyTo: email,
+      subject: subjectLine,
+      text: [
+        'You received a new portfolio contact message:',
+        `Name: ${name}`,
+        `Email: ${email}`,
+        `Subject: ${subject || 'No subject'}`,
+        `Submitted At: ${submittedAt}`,
+        '',
+        message,
+      ].join('\n'),
+      html: `
+        <div style="font-family: Arial, sans-serif; line-height: 1.5; color: #0f172a;">
+          <h2 style="margin: 0 0 12px;">New Portfolio Contact Message</h2>
+          <p style="margin: 0 0 8px;"><strong>Name:</strong> ${safeName}</p>
+          <p style="margin: 0 0 8px;"><strong>Email:</strong> ${safeEmail}</p>
+          <p style="margin: 0 0 8px;"><strong>Subject:</strong> ${safeSubject}</p>
+          <p style="margin: 0 0 8px;"><strong>Submitted At:</strong> ${escapeHtml(submittedAt)}</p>
+          <hr style="margin: 14px 0; border: none; border-top: 1px solid #e2e8f0;" />
+          <p style="margin: 0;"><strong>Message:</strong></p>
+          <p style="margin: 8px 0 0; white-space: pre-wrap;">${safeMessage}</p>
+        </div>
+      `,
+    });
 
-  return { sent: true };
+    return { sent: true };
+  } catch (error) {
+    return {
+      sent: false,
+      reason: 'SMTP_SEND_FAILED',
+      errorMessage: error?.message || 'Unknown SMTP error',
+    };
+  }
 };
 
 module.exports = {
