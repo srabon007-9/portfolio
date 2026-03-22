@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 const PROMPT = 'srabon@portfolio:~$';
+const MATRIX_CHARS = '01アイウエオカキクケコサシスセソABCDEFGHIJKLMNOPQRSTUVWXYZ#$%&@';
 
 function sleepWithTracking(ms, timeoutRefs) {
   return new Promise((resolve) => {
@@ -34,6 +35,10 @@ function AnimatedOutput({ text, animate }) {
   return <span>{visibleText}</span>;
 }
 
+function generateMatrixLine(length = 44) {
+  return Array.from({ length }, () => MATRIX_CHARS[Math.floor(Math.random() * MATRIX_CHARS.length)]).join('');
+}
+
 function TerminalSection() {
   const [history, setHistory] = useState([
     {
@@ -62,6 +67,7 @@ function TerminalSection() {
       'contact',
       'hack',
       'matrix',
+      'rain',
       'joke',
       'mission',
       'clear',
@@ -126,6 +132,21 @@ function TerminalSection() {
     setIsBusy(false);
   };
 
+  const runRainSequence = async () => {
+    setIsBusy(true);
+
+    appendLine({ type: 'output', text: 'Launching digital rain...' });
+    await sleepWithTracking(350, timeoutRefs);
+
+    for (let i = 0; i < 20; i += 1) {
+      appendLine({ type: 'matrix', text: generateMatrixLine(34 + (i % 14)), animate: false });
+      await sleepWithTracking(95, timeoutRefs);
+    }
+
+    appendLine({ type: 'output', text: 'Signal stable. Matrix stream terminated.' });
+    setIsBusy(false);
+  };
+
   const executeCommand = async (rawCommand) => {
     const command = rawCommand.toLowerCase();
 
@@ -133,7 +154,7 @@ function TerminalSection() {
       case 'help':
         appendLine({
           type: 'output',
-          text: 'Available commands: help, about, skills, projects, contact, hack, matrix, joke, mission, clear',
+          text: 'Available commands: help, about, skills, projects, contact, hack, matrix, rain, joke, mission, clear',
         });
         break;
       case 'about':
@@ -162,6 +183,9 @@ function TerminalSection() {
         break;
       case 'matrix':
         await runMatrixSequence();
+        break;
+      case 'rain':
+        await runRainSequence();
         break;
       case 'joke':
         appendLine({
@@ -267,7 +291,15 @@ function TerminalSection() {
                   <span className="text-emerald-200">{PROMPT}</span> <span>{line.text}</span>
                 </p>
               ) : (
-                <p className={line.type === 'error' ? 'text-rose-300' : 'text-emerald-300'}>
+                <p
+                  className={
+                    line.type === 'error'
+                      ? 'text-rose-300'
+                      : line.type === 'matrix'
+                        ? 'text-lime-300/90'
+                        : 'text-emerald-300'
+                  }
+                >
                   <AnimatedOutput text={line.text} animate={line.animate} />
                 </p>
               )}
