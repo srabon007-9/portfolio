@@ -44,11 +44,8 @@ function AdminInbox() {
       const headers = {
         'x-admin-key': keyToUse.trim(),
       };
-      const [accessResponse, response] = await Promise.all([
-        axios.get(`${apiBaseUrl}/api/contact/access`, { headers }),
-        axios.get(`${apiBaseUrl}/api/contact`, { headers }),
-      ]);
-      setPanelRole(accessResponse?.data?.role || '');
+      const response = await axios.get(`${apiBaseUrl}/api/contact`, { headers });
+      setPanelRole(response?.headers?.['x-panel-role'] || 'admin');
       setMessages(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to load inbox messages.');

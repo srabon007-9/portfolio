@@ -87,14 +87,11 @@ function AdminPanel() {
         'x-admin-key': keyToUse.trim(),
       };
 
-      const [accessResponse, response] = await Promise.all([
-        axios.get(`${apiBaseUrl}/api/contact/access`, { headers }),
-        axios.get(`${apiBaseUrl}/api/contact`, { headers }),
-      ]);
+      const response = await axios.get(`${apiBaseUrl}/api/contact`, { headers });
 
       const data = Array.isArray(response.data) ? response.data : [];
       setMessages(data);
-      setPanelRole(accessResponse?.data?.role || '');
+      setPanelRole(response?.headers?.['x-panel-role'] || 'admin');
       setLastSyncedAt(new Date());
       setSelectedId((prev) => prev || data[0]?._id || '');
     } catch (err) {
