@@ -7,12 +7,14 @@ const STORAGE_KEY = 'portfolio_admin_inbox_key';
 function AdminInbox() {
   const [adminKey, setAdminKey] = useState(() => localStorage.getItem(STORAGE_KEY) || '');
   const [draftKey, setDraftKey] = useState(() => localStorage.getItem(STORAGE_KEY) || '');
+  const [panelRole, setPanelRole] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [search, setSearch] = useState('');
 
   const apiBaseUrl = process.env.REACT_APP_API_URL;
+  const canDelete = panelRole === 'admin';
 
   const filteredMessages = useMemo(() => {
     const q = search.trim().toLowerCase();
@@ -39,11 +41,14 @@ function AdminInbox() {
     setError('');
 
     try {
-      const response = await axios.get(`${apiBaseUrl}/api/contact`, {
-        headers: {
-          'x-admin-key': keyToUse.trim(),
-        },
-      });
+      const headers = {
+        'x-admin-key': keyToUse.trim(),
+      };
+      const [accessResponse, response] = await Promise.all([
+        axios.get(`${apiBaseUrl}/api/contact/access`, { headers }),
+        axios.get(`${apiBaseUrl}/api/contact`, { headers }),
+      ]);
+      setPanelRole(accessResponse?.data?.role || '');
       setMessages(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
       setError(err?.response?.data?.message || 'Failed to load inbox messages.');
@@ -107,7 +112,7 @@ function AdminInbox() {
           <div className="grid gap-4 md:grid-cols-[1fr_auto]">
             <div>
               <label htmlFor="adminKey" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Admin Key
+                Panel Key (Admin / Moderator)
               </label>
               <input
                 id="adminKey"
@@ -115,8 +120,13 @@ function AdminInbox() {
                 value={draftKey}
                 onChange={(e) => setDraftKey(e.target.value)}
                 className="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition-all focus:border-cyan-400"
-                placeholder="Enter ADMIN_INBOX_KEY"
+                placeholder="Enter ADMIN_INBOX_KEY or MODERATOR_INBOX_KEY"
               />
+              {panelRole && (
+                <p className="mt-2 text-xs text-slate-500">
+                  Role: <span className="font-semibold text-cyan-300">{panelRole}</span>
+                </p>
+              )}
             </div>
             <button
               type="button"
@@ -195,13 +205,19 @@ function AdminInbox() {
                         Mark as Read
                       </button>
                     )}
-                    <button
-                      type="button"
-                      onClick={() => deleteMessage(msg._id)}
-                      className="rounded-lg border border-rose-400/40 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-300 transition-all hover:bg-rose-500/20"
-                    >
-                      Delete
-                    </button>
+                    {canDelete ? (
+                      <button
+                        type="button"
+                        onClick={() => deleteMessage(msg._id)}
+                        className="rounded-lg border border-rose-400/40 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-300 transition-all hover:bg-rose-500/20"
+                      >
+                        Delete
+                      </button>
+                    ) : (
+                      <span className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-500">
+                        Delete is admin-only
+                      </span>
+                    )}
                   </div>
                 </article>
               ))

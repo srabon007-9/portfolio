@@ -8,6 +8,7 @@ const STORAGE_KEY = 'portfolio_admin_inbox_key';
 function AdminPanel() {
   const [adminKey, setAdminKey] = useState(() => localStorage.getItem(STORAGE_KEY) || '');
   const [draftKey, setDraftKey] = useState(() => localStorage.getItem(STORAGE_KEY) || '');
+  const [panelRole, setPanelRole] = useState('');
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [actionLoadingId, setActionLoadingId] = useState('');
@@ -19,6 +20,7 @@ function AdminPanel() {
   const [lastSyncedAt, setLastSyncedAt] = useState(null);
 
   const apiBaseUrl = process.env.REACT_APP_API_URL;
+  const canDelete = panelRole === 'admin';
 
   useEffect(() => {
     if (adminKey) {
@@ -81,14 +83,18 @@ function AdminPanel() {
     setError('');
 
     try {
-      const response = await axios.get(`${apiBaseUrl}/api/contact`, {
-        headers: {
-          'x-admin-key': keyToUse.trim(),
-        },
-      });
+      const headers = {
+        'x-admin-key': keyToUse.trim(),
+      };
+
+      const [accessResponse, response] = await Promise.all([
+        axios.get(`${apiBaseUrl}/api/contact/access`, { headers }),
+        axios.get(`${apiBaseUrl}/api/contact`, { headers }),
+      ]);
 
       const data = Array.isArray(response.data) ? response.data : [];
       setMessages(data);
+      setPanelRole(accessResponse?.data?.role || '');
       setLastSyncedAt(new Date());
       setSelectedId((prev) => prev || data[0]?._id || '');
     } catch (err) {
@@ -108,6 +114,7 @@ function AdminPanel() {
   const handleSignOut = () => {
     setAdminKey('');
     setDraftKey('');
+    setPanelRole('');
     setMessages([]);
     setSelectedId('');
     localStorage.removeItem(STORAGE_KEY);
@@ -257,7 +264,7 @@ function AdminPanel() {
           <div className="grid gap-4 md:grid-cols-[1fr_auto]">
             <div>
               <label htmlFor="adminDashboardKey" className="mb-2 block text-xs font-semibold uppercase tracking-wider text-slate-500">
-                Admin Key
+                Panel Key (Admin / Moderator)
               </label>
               <input
                 id="adminDashboardKey"
@@ -265,11 +272,16 @@ function AdminPanel() {
                 value={draftKey}
                 onChange={(event) => setDraftKey(event.target.value)}
                 className="w-full rounded-lg border border-slate-700 bg-slate-950/80 px-4 py-3 text-slate-100 outline-none transition-all focus:border-cyan-400"
-                placeholder="Enter ADMIN_INBOX_KEY"
+                placeholder="Enter ADMIN_INBOX_KEY or MODERATOR_INBOX_KEY"
               />
               <p className="mt-2 text-xs text-slate-500">
                 Status: {adminKey ? <span className="text-emerald-300">Unlocked</span> : <span className="text-amber-300">Locked</span>}
               </p>
+              {panelRole && (
+                <p className="mt-1 text-xs text-slate-500">
+                  Role: <span className="font-semibold text-cyan-300">{panelRole}</span>
+                </p>
+              )}
             </div>
 
             <button
@@ -400,14 +412,20 @@ function AdminPanel() {
                       </button>
                     )}
 
-                    <button
-                      type="button"
-                      onClick={() => deleteMessage(selectedMessage._id)}
-                      disabled={actionLoadingId === selectedMessage._id}
-                      className="rounded-lg border border-rose-400/40 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-300 transition-all hover:bg-rose-500/20 disabled:opacity-60"
-                    >
-                      {actionLoadingId === selectedMessage._id ? 'Deleting...' : 'Delete Message'}
-                    </button>
+                    {canDelete ? (
+                      <button
+                        type="button"
+                        onClick={() => deleteMessage(selectedMessage._id)}
+                        disabled={actionLoadingId === selectedMessage._id}
+                        className="rounded-lg border border-rose-400/40 bg-rose-500/10 px-3 py-2 text-xs font-semibold text-rose-300 transition-all hover:bg-rose-500/20 disabled:opacity-60"
+                      >
+                        {actionLoadingId === selectedMessage._id ? 'Deleting...' : 'Delete Message'}
+                      </button>
+                    ) : (
+                      <span className="rounded-lg border border-slate-700 px-3 py-2 text-xs text-slate-500">
+                        Delete is admin-only
+                      </span>
+                    )}
                   </div>
                 </>
               )}

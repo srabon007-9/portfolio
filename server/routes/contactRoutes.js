@@ -11,23 +11,28 @@ const {
   markAllAsRead,
   deleteContactMessage,
 } = require('../controllers/contactController');
-const { requireAdminKey } = require('../middleware/adminAuth');
+const { requirePanelAccess, requireAdminKey } = require('../middleware/adminAuth');
 
 // Routes for contact endpoints
 // GET /api/contact - Fetch all contact messages (admin view)
-router.get('/', requireAdminKey, getContactMessages);
+router.get('/', requirePanelAccess, getContactMessages);
+
+// GET /api/contact/access - Get current panel role
+router.get('/access', requirePanelAccess, (req, res) => {
+  res.status(200).json({ role: req.panelRole || 'unknown' });
+});
 
 // POST /api/contact - Create a new contact message
 router.post('/', createContactMessage);
 
 // PATCH /api/contact/:id/read - Mark a message as read
-router.patch('/:id/read', requireAdminKey, markAsRead);
+router.patch('/:id/read', requirePanelAccess, markAsRead);
 
 // PATCH /api/contact/:id/unread - Mark a message as unread
-router.patch('/:id/unread', requireAdminKey, markAsUnread);
+router.patch('/:id/unread', requirePanelAccess, markAsUnread);
 
 // PATCH /api/contact/read-all - Mark all messages as read
-router.patch('/read-all', requireAdminKey, markAllAsRead);
+router.patch('/read-all', requirePanelAccess, markAllAsRead);
 
 // DELETE /api/contact/:id - Delete a contact message
 router.delete('/:id', requireAdminKey, deleteContactMessage);
