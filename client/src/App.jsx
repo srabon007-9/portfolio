@@ -1,6 +1,6 @@
 // Import React and Router
 import React, { Suspense, lazy, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 // Import components
 import Navbar from './components/Navbar';
@@ -16,6 +16,86 @@ const Projects = lazy(() => import('./pages/Projects'));
 const Contact = lazy(() => import('./pages/Contact'));
 const AdminInbox = lazy(() => import('./pages/AdminInbox'));
 const AdminPanel = lazy(() => import('./pages/AdminPanel'));
+
+function SeoManager() {
+  const location = useLocation();
+
+  useEffect(() => {
+    const siteUrl = 'https://www.srabon.me';
+    const path = location.pathname;
+
+    const seoByPath = {
+      '/': {
+        title: 'Srabon | MERN Stack Developer',
+        description:
+          'Srabon Ahmed is a MERN Stack Developer and Computer Science student building modern, fast, and user-focused web applications.',
+      },
+      '/about': {
+        title: 'About Srabon | MERN Developer',
+        description:
+          'Learn about Srabon Ahmed, Computer Science student at Brac University, focused on MERN stack and Data Structures & Algorithms.',
+      },
+      '/skills': {
+        title: 'Skills | Srabon Ahmed',
+        description:
+          'Explore Srabon Ahmed\'s technical skills in React, Node.js, Express, MongoDB, JavaScript, and backend development.',
+      },
+      '/projects': {
+        title: 'Projects | Srabon Ahmed Portfolio',
+        description:
+          'Featured full-stack projects by Srabon Ahmed showcasing MERN stack development, UI/UX quality, and practical problem solving.',
+      },
+      '/contact': {
+        title: 'Contact | Srabon Ahmed',
+        description:
+          'Get in touch with Srabon Ahmed for internships, collaborations, and developer opportunities.',
+      },
+    };
+
+    const isAdminRoute = path.startsWith('/admin');
+    const fallback = {
+      title: 'Srabon | MERN Stack Developer',
+      description:
+        'Portfolio of Srabon Ahmed — MERN Stack Developer and Computer Science student.',
+    };
+    const selected = seoByPath[path] || fallback;
+
+    const pageTitle = isAdminRoute ? 'Admin Panel | Srabon Portfolio' : selected.title;
+    const pageDescription = isAdminRoute
+      ? 'Private admin panel for portfolio inbox management.'
+      : selected.description;
+    const canonical = `${siteUrl}${path}`;
+
+    document.title = pageTitle;
+
+    const setMeta = (selector, content) => {
+      const element = document.querySelector(selector);
+      if (element) element.setAttribute('content', content);
+    };
+
+    setMeta('meta[name="description"]', pageDescription);
+    setMeta('#og-title', pageTitle);
+    setMeta('#og-description', pageDescription);
+    setMeta('#og-url', canonical);
+    setMeta('meta[name="twitter:title"]', pageTitle);
+    setMeta('meta[name="twitter:description"]', pageDescription);
+
+    const canonicalEl = document.getElementById('canonical-link');
+    if (canonicalEl) {
+      canonicalEl.setAttribute('href', canonical);
+    }
+
+    const robotsEl = document.querySelector('meta[name="robots"]');
+    if (robotsEl) {
+      robotsEl.setAttribute(
+        'content',
+        isAdminRoute ? 'noindex,nofollow,noarchive' : 'index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1'
+      );
+    }
+  }, [location.pathname]);
+
+  return null;
+}
 
 // Main App component
 function App() {
@@ -64,6 +144,7 @@ function App() {
 
   return (
     <Router>
+      <SeoManager />
       <MouseGlow />
       <CustomCursor />
 
