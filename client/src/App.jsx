@@ -1,5 +1,5 @@
 // Import React and Router
-import React, { Suspense, lazy, useEffect } from 'react';
+import React, { Suspense, lazy, useEffect, useState } from 'react';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 
 // Import components
@@ -99,6 +99,39 @@ function SeoManager() {
 
 // Main App component
 function App() {
+  const [enhanceVisuals, setEnhanceVisuals] = useState(false);
+
+  useEffect(() => {
+    const prefersReducedMotion =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isCoarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
+
+    if (prefersReducedMotion || isCoarsePointer) {
+      setEnhanceVisuals(false);
+      return undefined;
+    }
+
+    let timeoutId = null;
+    let idleId = null;
+
+    const enableEnhancements = () => setEnhanceVisuals(true);
+
+    if (typeof window.requestIdleCallback === 'function') {
+      idleId = window.requestIdleCallback(enableEnhancements, { timeout: 1200 });
+    } else {
+      timeoutId = window.setTimeout(enableEnhancements, 300);
+    }
+
+    return () => {
+      if (idleId !== null && typeof window.cancelIdleCallback === 'function') {
+        window.cancelIdleCallback(idleId);
+      }
+      if (timeoutId !== null) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     const prefersReducedMotion =
       window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -145,20 +178,22 @@ function App() {
   return (
     <Router>
       <SeoManager />
-      <MouseGlow />
-      <CustomCursor />
+      {enhanceVisuals ? <MouseGlow /> : null}
+      {enhanceVisuals ? <CustomCursor /> : null}
 
       {/* Navbar appears on every page */}
       <Navbar />
 
       {/* Main content area - Routes define which page to show */}
       <main className="parallax-scene bg-grid relative min-h-screen overflow-hidden bg-slate-950 text-slate-100">
-        <div className="pointer-events-none absolute inset-0 -z-10">
-          <div className="animated-grid-overlay" />
-          <div className="floating-particles" />
-          <div className="orb orb-cyan" />
-          <div className="orb orb-purple" />
-        </div>
+        {enhanceVisuals ? (
+          <div className="pointer-events-none absolute inset-0 -z-10">
+            <div className="animated-grid-overlay" />
+            <div className="floating-particles" />
+            <div className="orb orb-cyan" />
+            <div className="orb orb-purple" />
+          </div>
+        ) : null}
         <div className="parallax-content">
           <Suspense
             fallback={

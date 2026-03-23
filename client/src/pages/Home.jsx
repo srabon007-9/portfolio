@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
-import LoadingSpinner from '../components/LoadingSpinner';
 import TechOrbit from '../components/TechOrbit';
 import LiveCodePreview from '../components/LiveCodePreview';
 import SectionReveal from '../components/SectionReveal';
@@ -11,9 +10,11 @@ import TerminalSection from '../components/TerminalSection';
 // Home page - Landing page of the portfolio
 function Home() {
   // State to store user data
-  const [user, setUser] = useState(null);
-  // State to track loading
-  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState({
+    name: 'Srabon Ahmed',
+    email: 'srabonahmed2002@gmail.com',
+    bio: 'Full-stack developer passionate about building amazing web applications.',
+  });
   // State to track errors
   const [error, setError] = useState(null);
 
@@ -78,7 +79,9 @@ function Home() {
         throw new Error('REACT_APP_API_URL is not configured');
       }
 
-      const response = await axios.get(`${apiBaseUrl}/api/user`);
+      const response = await axios.get(`${apiBaseUrl}/api/user`, {
+        timeout: 2500,
+      });
       const userData = response.data;
 
       // Validate expected response shape
@@ -101,16 +104,8 @@ function Home() {
         email: 'srabonahmed2002@gmail.com',
         bio: 'Full-stack developer passionate about building amazing web applications.',
       });
-    } finally {
-      // Stop loading regardless of success or failure
-      setLoading(false);
     }
   };
-
-  // Show loading spinner while fetching data
-  if (loading) {
-    return <LoadingSpinner />;
-  }
 
   return (
     <div className="min-h-screen w-full">

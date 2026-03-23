@@ -10,8 +10,8 @@ function TechOrbit() {
   return (
     <div className="tech-orbit-wrapper">
       <div className="tech-orbit-center">
-        <span className="text-xs uppercase tracking-[0.2em] text-cyan-300/80">Core Stack</span>
-        <p className="mt-2 text-sm font-semibold text-slate-100">MERN + Python</p>
+        <span className="text-[10px] uppercase tracking-[0.12em] text-cyan-300/80">Core Stack</span>
+        <p className="mt-1 text-xs font-semibold text-slate-100">MERN + Python</p>
       </div>
 
       <div className="tech-orbit-ring" aria-hidden="true" />
@@ -23,7 +23,7 @@ function TechOrbit() {
           style={{ animationDelay: item.delay, transform: `rotate(${index * 72}deg)` }}
         >
           <div className="tech-orbit-item" title={item.name}>
-            <span>{item.short}</span>
+            <span className="text-[0.78rem] leading-none">{item.short}</span>
             <span className="tech-orbit-tooltip">{item.name}</span>
           </div>
         </div>
