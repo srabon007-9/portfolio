@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion';
+
 // Skills page - Showcase all technical skills
 function Skills() {
   const skillCategories = [
@@ -85,7 +87,10 @@ function Skills() {
 
         {/* Proficiency Section */}
         <div className="mt-20 rounded-xl border border-slate-800 bg-slate-900/50 p-12">
-          <h2 className="mb-8 text-3xl font-bold text-slate-100">Proficiency Levels</h2>
+          <div className="mb-8 flex flex-wrap items-center justify-between gap-3">
+            <h2 className="text-3xl font-bold text-slate-100">Proficiency Levels</h2>
+            <p className="text-sm text-slate-400">Tip: drag each row left/right for a movable effect</p>
+          </div>
           
           <div className="space-y-8">
             {[
@@ -95,18 +100,36 @@ function Skills() {
               { skill: 'HTML, CSS & Tailwind', level: 90, color: 'from-blue-500 to-cyan-500' },
               { skill: 'Problem Solving', level: 85, color: 'from-indigo-500 to-purple-500' },
             ].map((item, index) => (
-              <div key={index}>
+              <motion.div
+                key={index}
+                drag="x"
+                dragConstraints={{ left: -24, right: 24 }}
+                dragElastic={0.18}
+                whileHover={{ y: -2 }}
+                whileDrag={{ scale: 1.01 }}
+                transition={{ type: 'spring', stiffness: 220, damping: 18 }}
+              >
                 <div className="mb-2 flex justify-between">
                   <span className="font-semibold text-slate-300">{item.skill}</span>
                   <span className="text-sm text-slate-500">{item.level}%</span>
                 </div>
                 <div className="h-2.5 rounded-full bg-slate-800 overflow-hidden">
-                  <div
-                    className={`h-full rounded-full bg-gradient-to-r ${item.color} transition-all duration-500`}
-                    style={{ width: `${item.level}%` }}
-                  />
+                  <motion.div
+                    className={`relative h-full rounded-full bg-gradient-to-r ${item.color}`}
+                    initial={{ width: 0 }}
+                    whileInView={{ width: `${item.level}%` }}
+                    viewport={{ once: true, amount: 0.5 }}
+                    transition={{ duration: 0.8, delay: index * 0.08, ease: 'easeOut' }}
+                  >
+                    <motion.span
+                      className="absolute inset-y-0 w-10 bg-white/20 blur-[1px]"
+                      animate={{ x: ['-120%', '340%'] }}
+                      transition={{ duration: 2.2, repeat: Infinity, ease: 'linear', delay: index * 0.15 }}
+                      aria-hidden="true"
+                    />
+                  </motion.div>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         </div>

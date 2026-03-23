@@ -1,6 +1,7 @@
 // Import React hooks
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import TechOrbit from '../components/TechOrbit';
 import LiveCodePreview from '../components/LiveCodePreview';
@@ -33,6 +34,29 @@ function Home() {
   const [lineIndex, setLineIndex] = useState(0);
   const [charIndex, setCharIndex] = useState(0);
   const [isDeleting, setIsDeleting] = useState(false);
+  const movingHighlights = useMemo(
+    () => [
+      {
+        title: 'Fast UI Rendering',
+        text: 'Optimized components, lazy loading, and responsive interactions for smoother experiences.',
+        color: 'from-cyan-500/20 to-blue-500/10',
+        delay: 0,
+      },
+      {
+        title: 'Interactive Frontend',
+        text: 'Micro-interactions and motion cues that guide users without hurting usability.',
+        color: 'from-violet-500/20 to-cyan-500/10',
+        delay: 0.2,
+      },
+      {
+        title: 'Scalable Code Style',
+        text: 'Reusable architecture and clean patterns designed for real production growth.',
+        color: 'from-emerald-500/20 to-cyan-500/10',
+        delay: 0.35,
+      },
+    ],
+    []
+  );
 
   // useEffect runs when component mounts
   useEffect(() => {
@@ -269,6 +293,57 @@ function Home() {
                 <p className="mt-3 text-sm text-slate-400">Progress: {item.progress}%</p>
               </div>
             ))}
+          </div>
+        </div>
+      </SectionReveal>
+
+      <SectionReveal className="px-4 py-16">
+        <div className="mx-auto max-w-6xl">
+          <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-cyan-300">Motion Highlights</p>
+          <h3 className="mb-4 text-2xl font-bold text-slate-100">A more dynamic look at how I build</h3>
+          <p className="mb-8 max-w-3xl text-slate-400">
+            A moving showcase of the principles I focus on while building modern web products.
+          </p>
+
+          <div className="grid gap-6 md:grid-cols-3">
+            {movingHighlights.map((item) => (
+              <motion.div
+                key={item.title}
+                data-cursor="hover"
+                className={`glass-card rounded-xl border border-slate-700/70 bg-gradient-to-br ${item.color} p-6`}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.4 }}
+                whileHover={{ y: -6, scale: 1.01 }}
+                animate={{ y: [0, -6, 0] }}
+                transition={{
+                  duration: 4,
+                  repeat: Infinity,
+                  ease: 'easeInOut',
+                  delay: item.delay,
+                }}
+              >
+                <h4 className="mb-3 text-base font-semibold text-slate-100">{item.title}</h4>
+                <p className="text-sm leading-relaxed text-slate-300">{item.text}</p>
+              </motion.div>
+            ))}
+          </div>
+
+          <div className="mt-8 overflow-hidden rounded-xl border border-slate-800 bg-slate-900/50">
+            <motion.div
+              className="flex min-w-max gap-3 px-4 py-3"
+              animate={{ x: ['0%', '-50%'] }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
+            >
+              {[...movingHighlights, ...movingHighlights].map((item, idx) => (
+                <span
+                  key={`${item.title}-${idx}`}
+                  className="rounded-full border border-cyan-400/30 bg-cyan-400/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.08em] text-cyan-200"
+                >
+                  {item.title}
+                </span>
+              ))}
+            </motion.div>
           </div>
         </div>
       </SectionReveal>
