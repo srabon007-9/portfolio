@@ -48,7 +48,18 @@ function AdminInbox() {
       setPanelRole(response?.headers?.['x-panel-role'] || 'admin');
       setMessages(Array.isArray(response.data) ? response.data : []);
     } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to load inbox messages.');
+      const status = err?.response?.status;
+      const serverMessage = err?.response?.data?.message;
+
+      if (serverMessage) {
+        setError(serverMessage);
+      } else if (status === 401 || status === 403) {
+        setError('Invalid panel key. Please check ADMIN_INBOX_KEY or MODERATOR_INBOX_KEY.');
+      } else if (status === 503) {
+        setError('Admin inbox is unavailable: database is not connected.');
+      } else {
+        setError('Failed to load inbox messages.');
+      }
     } finally {
       setLoading(false);
     }

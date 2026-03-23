@@ -95,7 +95,18 @@ function AdminPanel() {
       setLastSyncedAt(new Date());
       setSelectedId((prev) => prev || data[0]?._id || '');
     } catch (err) {
-      setError(err?.response?.data?.message || 'Failed to load dashboard data.');
+      const status = err?.response?.status;
+      const serverMessage = err?.response?.data?.message;
+
+      if (serverMessage) {
+        setError(serverMessage);
+      } else if (status === 401 || status === 403) {
+        setError('Invalid panel key. Please check ADMIN_INBOX_KEY or MODERATOR_INBOX_KEY.');
+      } else if (status === 503) {
+        setError('Admin inbox is unavailable: database is not connected.');
+      } else {
+        setError('Failed to load dashboard data.');
+      }
     } finally {
       setLoading(false);
     }

@@ -17,6 +17,24 @@ exports.getContactMessages = async (req, res) => {
 
     res.status(200).json(messages);
   } catch (error) {
+    if (error?.message?.includes('MONGODB_URI is not configured')) {
+      return res.status(503).json({
+        message: 'Admin inbox unavailable: database URI is not configured.',
+      });
+    }
+
+    if (
+      error?.name === 'MongooseServerSelectionError' ||
+      error?.name === 'MongoServerSelectionError' ||
+      error?.message?.toLowerCase?.().includes('could not connect to any servers') ||
+      error?.message?.toLowerCase?.().includes('whitelist')
+    ) {
+      return res.status(503).json({
+        message:
+          'Admin inbox unavailable: cannot connect to MongoDB Atlas. Check Atlas Network Access and Vercel environment variables.',
+      });
+    }
+
     res.status(500).json({ message: 'Error fetching messages', error: error.message });
   }
 };
@@ -133,6 +151,16 @@ exports.markAsRead = async (req, res) => {
 
     res.status(200).json({ message: 'Message marked as read', contact });
   } catch (error) {
+    if (
+      error?.name === 'MongooseServerSelectionError' ||
+      error?.name === 'MongoServerSelectionError' ||
+      error?.message?.toLowerCase?.().includes('could not connect to any servers')
+    ) {
+      return res.status(503).json({
+        message: 'Cannot update message status: database connection unavailable.',
+      });
+    }
+
     res.status(500).json({ message: 'Error updating message', error: error.message });
   }
 };
@@ -156,6 +184,16 @@ exports.markAsUnread = async (req, res) => {
 
     res.status(200).json({ message: 'Message marked as unread', contact });
   } catch (error) {
+    if (
+      error?.name === 'MongooseServerSelectionError' ||
+      error?.name === 'MongoServerSelectionError' ||
+      error?.message?.toLowerCase?.().includes('could not connect to any servers')
+    ) {
+      return res.status(503).json({
+        message: 'Cannot update message status: database connection unavailable.',
+      });
+    }
+
     res.status(500).json({ message: 'Error updating message', error: error.message });
   }
 };
@@ -174,6 +212,16 @@ exports.markAllAsRead = async (req, res) => {
       modifiedCount: result.modifiedCount || 0,
     });
   } catch (error) {
+    if (
+      error?.name === 'MongooseServerSelectionError' ||
+      error?.name === 'MongoServerSelectionError' ||
+      error?.message?.toLowerCase?.().includes('could not connect to any servers')
+    ) {
+      return res.status(503).json({
+        message: 'Cannot update messages: database connection unavailable.',
+      });
+    }
+
     res.status(500).json({ message: 'Error updating messages', error: error.message });
   }
 };
@@ -193,6 +241,16 @@ exports.deleteContactMessage = async (req, res) => {
 
     res.status(200).json({ message: 'Message deleted successfully' });
   } catch (error) {
+    if (
+      error?.name === 'MongooseServerSelectionError' ||
+      error?.name === 'MongoServerSelectionError' ||
+      error?.message?.toLowerCase?.().includes('could not connect to any servers')
+    ) {
+      return res.status(503).json({
+        message: 'Cannot delete message: database connection unavailable.',
+      });
+    }
+
     res.status(500).json({ message: 'Error deleting message', error: error.message });
   }
 };
