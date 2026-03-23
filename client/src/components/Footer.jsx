@@ -53,7 +53,7 @@ function Footer() {
             <h4 className="mb-4 font-semibold text-slate-100">Connect</h4>
             <div className="space-y-2 text-sm">
               <a
-                href="https://github.com"
+                href="https://github.com/srabon007-9"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 text-slate-400 transition-colors hover:text-cyan-400"

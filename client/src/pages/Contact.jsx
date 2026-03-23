@@ -249,7 +249,7 @@ function Contact() {
                 </a>
 
                 <a
-                  href="https://github.com"
+                  href="https://github.com/srabon007-9"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-3 rounded-lg border border-slate-700 bg-slate-950/50 p-3 transition-all hover:border-slate-600 hover:bg-slate-800/50"

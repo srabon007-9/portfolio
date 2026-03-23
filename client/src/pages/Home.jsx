@@ -1,6 +1,7 @@
 // Import React hooks
 import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import TechOrbit from '../components/TechOrbit';
 import LiveCodePreview from '../components/LiveCodePreview';
@@ -18,6 +19,7 @@ function Home() {
 
   const displayName = user?.name?.trim() || 'Srabon Ahmed';
   const isProduction = process.env.NODE_ENV === 'production';
+  const cvUrl = process.env.REACT_APP_CV_URL;
   const typedLines = useMemo(
     () => [
       'I build modern web experiences.',
@@ -164,29 +166,40 @@ function Home() {
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a
-              href="/projects"
+            <Link
+              to="/projects"
               data-cursor="hover"
               className="group relative inline-flex items-center justify-center rounded-lg bg-gradient-to-r from-cyan-500 to-blue-500 px-8 py-3 text-sm font-semibold text-white transition-all hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:scale-105"
             >
               View My Work
               <span className="ml-2 transition-transform group-hover:translate-x-1">→</span>
-            </a>
-            <a
-              href="/contact"
+            </Link>
+            <Link
+              to="/contact"
               data-cursor="hover"
               className="rounded-lg border border-slate-600 bg-slate-900/50 px-8 py-3 text-sm font-semibold text-slate-200 transition-all hover:border-slate-400 hover:bg-slate-800/50"
             >
               Contact Me
-            </a>
-            <a
-              href="/"
-              onClick={(e) => e.preventDefault()}
-              data-cursor="hover"
-              className="rounded-lg border border-slate-600 bg-slate-900/50 px-8 py-3 text-sm font-semibold text-slate-200 transition-all hover:border-slate-400 hover:bg-slate-800/50 cursor-pointer"
-            >
-              Download CV
-            </a>
+            </Link>
+            {cvUrl ? (
+              <a
+                href={cvUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-cursor="hover"
+                className="rounded-lg border border-slate-600 bg-slate-900/50 px-8 py-3 text-sm font-semibold text-slate-200 transition-all hover:border-slate-400 hover:bg-slate-800/50"
+              >
+                Download CV
+              </a>
+            ) : (
+              <Link
+                to="/contact"
+                data-cursor="hover"
+                className="rounded-lg border border-slate-600 bg-slate-900/50 px-8 py-3 text-sm font-semibold text-slate-200 transition-all hover:border-slate-400 hover:bg-slate-800/50"
+              >
+                Request CV
+              </Link>
+            )}
           </div>
         </div>
       </section>

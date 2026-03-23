@@ -1,5 +1,5 @@
 // Import React and Router
-import React, { useEffect } from 'react';
+import React, { Suspense, lazy, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 // Import components
@@ -8,31 +8,55 @@ import Footer from './components/Footer';
 import MouseGlow from './components/MouseGlow';
 import CustomCursor from './components/CustomCursor';
 
-// Import pages
-import Home from './pages/Home';
-import About from './pages/About';
-import Skills from './pages/Skills';
-import Projects from './pages/Projects';
-import Contact from './pages/Contact';
-import AdminInbox from './pages/AdminInbox';
-import AdminPanel from './pages/AdminPanel';
+// Import pages (lazy loaded for faster initial render)
+const Home = lazy(() => import('./pages/Home'));
+const About = lazy(() => import('./pages/About'));
+const Skills = lazy(() => import('./pages/Skills'));
+const Projects = lazy(() => import('./pages/Projects'));
+const Contact = lazy(() => import('./pages/Contact'));
+const AdminInbox = lazy(() => import('./pages/AdminInbox'));
+const AdminPanel = lazy(() => import('./pages/AdminPanel'));
 
 // Main App component
 function App() {
   useEffect(() => {
-    const handleMouseMove = (event) => {
-      // Normalize mouse position to range -1 to 1
-      const normalizedX = (event.clientX / window.innerWidth - 0.5) * 2;
-      const normalizedY = (event.clientY / window.innerHeight - 0.5) * 2;
+    const prefersReducedMotion =
+      window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isCoarsePointer = window.matchMedia && window.matchMedia('(pointer: coarse)').matches;
 
-      document.documentElement.style.setProperty('--mx', normalizedX.toFixed(4));
-      document.documentElement.style.setProperty('--my', normalizedY.toFixed(4));
+    if (prefersReducedMotion || isCoarsePointer) {
+      document.documentElement.style.setProperty('--mx', '0');
+      document.documentElement.style.setProperty('--my', '0');
+      return undefined;
+    }
+
+    let rafId = null;
+    let latestX = 0;
+    let latestY = 0;
+
+    const flush = () => {
+      document.documentElement.style.setProperty('--mx', latestX.toFixed(4));
+      document.documentElement.style.setProperty('--my', latestY.toFixed(4));
+      rafId = null;
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
+    const handleMouseMove = (event) => {
+      // Normalize mouse position to range -1 to 1
+      latestX = (event.clientX / window.innerWidth - 0.5) * 2;
+      latestY = (event.clientY / window.innerHeight - 0.5) * 2;
+
+      if (rafId === null) {
+        rafId = window.requestAnimationFrame(flush);
+      }
+    };
+
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
 
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      if (rafId !== null) {
+        window.cancelAnimationFrame(rafId);
+      }
       document.documentElement.style.setProperty('--mx', '0');
       document.documentElement.style.setProperty('--my', '0');
     };
@@ -55,15 +79,21 @@ function App() {
           <div className="orb orb-purple" />
         </div>
         <div className="parallax-content">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/skills" element={<Skills />} />
-            <Route path="/projects" element={<Projects />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="/admin/inbox" element={<AdminInbox />} />
-          </Routes>
+          <Suspense
+            fallback={
+              <div className="flex min-h-[50vh] items-center justify-center text-slate-400">Loading...</div>
+            }
+          >
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/skills" element={<Skills />} />
+              <Route path="/projects" element={<Projects />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="/admin/inbox" element={<AdminInbox />} />
+            </Routes>
+          </Suspense>
         </div>
       </main>
 

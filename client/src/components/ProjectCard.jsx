@@ -3,7 +3,7 @@ function ProjectCard({ project }) {
   const title = project?.title || 'Untitled Project';
   const description = project?.description || 'No description provided yet.';
   const techStack = Array.isArray(project?.techStack) ? project.techStack : [];
-  const githubLink = project?.githubLink || '#';
+  const githubLink = project?.githubLink || '';
   const liveLink = project?.liveLink;
   const features = Array.isArray(project?.features) ? project.features : [];
 
@@ -77,14 +77,23 @@ function ProjectCard({ project }) {
 
         {/* Links */}
         <div className="flex gap-3 pt-6 border-t border-slate-800">
-          <a
-            href={githubLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-2.5 text-center text-sm font-semibold text-slate-300 transition-all hover:border-slate-600 hover:bg-slate-700/50 hover:text-white"
-          >
-            View Code
-          </a>
+          {githubLink ? (
+            <a
+              href={githubLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex-1 rounded-lg border border-slate-700 bg-slate-800/50 px-4 py-2.5 text-center text-sm font-semibold text-slate-300 transition-all hover:border-slate-600 hover:bg-slate-700/50 hover:text-white"
+            >
+              View Code
+            </a>
+          ) : (
+            <span
+              className="flex-1 cursor-not-allowed rounded-lg border border-slate-700/50 bg-slate-800/30 px-4 py-2.5 text-center text-sm font-semibold text-slate-500"
+              aria-disabled="true"
+            >
+              Code Private
+            </span>
+          )}
           {liveLink && (
             <a
               href={liveLink}

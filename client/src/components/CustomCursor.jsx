@@ -1,9 +1,12 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 function CustomCursor() {
-  const [position, setPosition] = useState({ x: -100, y: -100 });
   const [isActive, setIsActive] = useState(false);
   const [isPointer, setIsPointer] = useState(false);
+  const ringRef = useRef(null);
+  const dotRef = useRef(null);
+  const rafRef = useRef(null);
+  const posRef = useRef({ x: -100, y: -100 });
 
   const isTouchDevice = useMemo(
     () => window.matchMedia && window.matchMedia('(pointer: coarse)').matches,
@@ -13,9 +16,27 @@ function CustomCursor() {
   useEffect(() => {
     if (isTouchDevice) return;
 
+    const paint = () => {
+      const ringEl = ringRef.current;
+      const dotEl = dotRef.current;
+
+      if (ringEl) {
+        ringEl.style.transform = `translate3d(${posRef.current.x - 20}px, ${posRef.current.y - 20}px, 0)`;
+      }
+      if (dotEl) {
+        dotEl.style.transform = `translate3d(${posRef.current.x - 4}px, ${posRef.current.y - 4}px, 0)`;
+      }
+
+      rafRef.current = null;
+    };
+
     const handleMouseMove = (event) => {
-      setPosition({ x: event.clientX, y: event.clientY });
+      posRef.current = { x: event.clientX, y: event.clientY };
       setIsActive(true);
+
+      if (rafRef.current === null) {
+        rafRef.current = window.requestAnimationFrame(paint);
+      }
     };
 
     const handleMouseLeave = () => setIsActive(false);
@@ -38,6 +59,9 @@ function CustomCursor() {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseout', handleMouseLeave);
       document.removeEventListener('mouseover', handleMouseOver);
+      if (rafRef.current !== null) {
+        window.cancelAnimationFrame(rafRef.current);
+      }
     };
   }, [isTouchDevice]);
 
@@ -46,17 +70,17 @@ function CustomCursor() {
   return (
     <>
       <div
+        ref={ringRef}
         className={`custom-cursor-ring ${isActive ? 'opacity-100' : 'opacity-0'} ${
           isPointer ? 'custom-cursor-ring--hover' : ''
         }`}
-        style={{ transform: `translate3d(${position.x - 20}px, ${position.y - 20}px, 0)` }}
         aria-hidden="true"
       />
       <div
+        ref={dotRef}
         className={`custom-cursor-dot ${isActive ? 'opacity-100' : 'opacity-0'} ${
           isPointer ? 'custom-cursor-dot--hover' : ''
         }`}
-        style={{ transform: `translate3d(${position.x - 4}px, ${position.y - 4}px, 0)` }}
         aria-hidden="true"
       />
     </>

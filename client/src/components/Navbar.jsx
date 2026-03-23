@@ -48,12 +48,12 @@ function Navbar() {
 
           {/* CTA Button */}
           <div className="hidden md:block">
-            <a
-              href="/contact"
+            <Link
+              to="/contact"
               className="rounded-lg border border-cyan-400/30 bg-cyan-400/10 px-4 py-2 text-sm font-semibold text-cyan-300 transition-all hover:border-cyan-300 hover:bg-cyan-400/20"
             >
               Let's Connect
-            </a>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
