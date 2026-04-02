@@ -4,6 +4,17 @@ import axios from 'axios';
 import ProjectCard from '../components/ProjectCard';
 import LoadingSpinner from '../components/LoadingSpinner';
 
+const dhakaBusProject = {
+  _id: 'dhakabus-local',
+  title: 'Dhaka Bus',
+  description:
+    'A Dhaka city bus route and travel helper web app for quickly finding buses, routes, and transit information.',
+  techStack: ['React', 'Node.js', 'Express', 'MongoDB'],
+  githubLink: '',
+  liveLink: 'https://dhakabus.srabon.me',
+  imageUrl: 'https://dhakabus.srabon.me/favicon.svg',
+};
+
 // Projects page - Display all projects
 function Projects() {
   // State to store projects
@@ -23,7 +34,13 @@ function Projects() {
     try {
       const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects`);
       const projectList = Array.isArray(response.data) ? response.data : [];
-      setProjects(projectList);
+      const hasDhakaBus = projectList.some(
+        (project) =>
+          project?.liveLink === dhakaBusProject.liveLink ||
+          String(project?.title || '').toLowerCase() === dhakaBusProject.title.toLowerCase()
+      );
+
+      setProjects(hasDhakaBus ? projectList : [dhakaBusProject, ...projectList]);
       setError(null);
     } catch (err) {
       console.error('Error fetching projects:', err);
@@ -46,6 +63,7 @@ function Projects() {
           githubLink: 'https://github.com',
           liveLink: 'https://example.com',
         },
+        dhakaBusProject,
       ]);
     } finally {
       setLoading(false);
