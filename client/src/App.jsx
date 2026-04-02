@@ -6,7 +6,6 @@ import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-route
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import MouseGlow from './components/MouseGlow';
-import CustomCursor from './components/CustomCursor';
 
 // Import pages (lazy loaded for faster initial render)
 const Home = lazy(() => import('./pages/Home'));
@@ -179,7 +178,6 @@ function App() {
     <Router>
       <SeoManager />
       {enhanceVisuals ? <MouseGlow /> : null}
-      {enhanceVisuals ? <CustomCursor /> : null}
 
       {/* Navbar appears on every page */}
       <Navbar />
