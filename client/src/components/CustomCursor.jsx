@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 function CustomCursor() {
+  const location = useLocation();
   const [isActive, setIsActive] = useState(false);
   const [isPointer, setIsPointer] = useState(false);
   const ringRef = useRef(null);
@@ -66,6 +68,7 @@ function CustomCursor() {
   }, [isTouchDevice]);
 
   if (isTouchDevice) return null;
+  if (location.pathname.startsWith('/admin')) return null;
 
   return (
     <>

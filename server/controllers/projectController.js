@@ -1,8 +1,28 @@
 // Import the Project model
+const mongoose = require('mongoose');
 const Project = require('../models/Project');
 const connectDB = require('../config/database');
 
 // Controller functions handle the business logic for project routes
+const normalizeTechStack = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item).trim()).filter(Boolean);
+  }
+
+  if (typeof value === 'string') {
+    return value
+      .split(',')
+      .map((item) => item.trim())
+      .filter(Boolean);
+  }
+
+  return [];
+};
+
+const isDatabaseUnavailableError = (error) =>
+  error?.name === 'MongooseServerSelectionError' ||
+  error?.name === 'MongoServerSelectionError' ||
+  error?.message?.toLowerCase?.().includes('could not connect to any servers');
 
 // @desc    Get all projects
 // @route   GET /api/projects
@@ -16,6 +36,18 @@ exports.getProjects = async (req, res) => {
 
     res.status(200).json(projects);
   } catch (error) {
+    if (error?.message?.includes('MONGODB_URI is not configured')) {
+      return res.status(503).json({
+        message: 'Projects service is unavailable. Database is not configured.',
+      });
+    }
+
+    if (isDatabaseUnavailableError(error)) {
+      return res.status(503).json({
+        message: 'Projects service is unavailable. Cannot connect to database.',
+      });
+    }
+
     res.status(500).json({ message: 'Error fetching projects', error: error.message });
   }
 };
@@ -25,6 +57,10 @@ exports.getProjects = async (req, res) => {
 // @access  Public
 exports.getProjectById = async (req, res) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid project ID format' });
+    }
+
     await connectDB();
 
     const project = await Project.findById(req.params.id);
@@ -35,6 +71,18 @@ exports.getProjectById = async (req, res) => {
 
     res.status(200).json(project);
   } catch (error) {
+    if (error?.message?.includes('MONGODB_URI is not configured')) {
+      return res.status(503).json({
+        message: 'Projects service is unavailable. Database is not configured.',
+      });
+    }
+
+    if (isDatabaseUnavailableError(error)) {
+      return res.status(503).json({
+        message: 'Projects service is unavailable. Cannot connect to database.',
+      });
+    }
+
     res.status(500).json({ message: 'Error fetching project', error: error.message });
   }
 };
@@ -48,9 +96,10 @@ exports.createProject = async (req, res) => {
 
     // Destructure the data from the request body
     const { title, description, techStack, githubLink, liveLink, imageUrl } = req.body;
+    const normalizedTechStack = normalizeTechStack(techStack);
 
     // Validate required fields
-    if (!title || !description || !techStack || !githubLink) {
+    if (!title || !description || !githubLink || normalizedTechStack.length === 0) {
       return res.status(400).json({
         message: 'Title, description, techStack, and githubLink are required',
       });
@@ -60,7 +109,7 @@ exports.createProject = async (req, res) => {
     const project = new Project({
       title,
       description,
-      techStack,
+      techStack: normalizedTechStack,
       githubLink,
       liveLink,
       imageUrl,
@@ -71,6 +120,18 @@ exports.createProject = async (req, res) => {
 
     res.status(201).json({ message: 'Project created successfully', project: savedProject });
   } catch (error) {
+    if (error?.message?.includes('MONGODB_URI is not configured')) {
+      return res.status(503).json({
+        message: 'Projects service is unavailable. Database is not configured.',
+      });
+    }
+
+    if (isDatabaseUnavailableError(error)) {
+      return res.status(503).json({
+        message: 'Projects service is unavailable. Cannot connect to database.',
+      });
+    }
+
     res.status(500).json({ message: 'Error creating project', error: error.message });
   }
 };
@@ -80,15 +141,37 @@ exports.createProject = async (req, res) => {
 // @access  Public (In production, you should add authentication)
 exports.updateProject = async (req, res) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid project ID format' });
+    }
+
     await connectDB();
 
     const { id } = req.params;
     const { title, description, techStack, githubLink, liveLink, imageUrl } = req.body;
+    const updatePayload = {};
+
+    if (title !== undefined) updatePayload.title = title;
+    if (description !== undefined) updatePayload.description = description;
+    if (githubLink !== undefined) updatePayload.githubLink = githubLink;
+    if (liveLink !== undefined) updatePayload.liveLink = liveLink;
+    if (imageUrl !== undefined) updatePayload.imageUrl = imageUrl;
+    if (techStack !== undefined) {
+      const normalizedTechStack = normalizeTechStack(techStack);
+      if (normalizedTechStack.length === 0) {
+        return res.status(400).json({ message: 'techStack must contain at least one item' });
+      }
+      updatePayload.techStack = normalizedTechStack;
+    }
+
+    if (Object.keys(updatePayload).length === 0) {
+      return res.status(400).json({ message: 'No valid fields were provided for update' });
+    }
 
     // Find the project and update it
     const project = await Project.findByIdAndUpdate(
       id,
-      { title, description, techStack, githubLink, liveLink, imageUrl },
+      updatePayload,
       { new: true, runValidators: true }
     );
 
@@ -98,6 +181,18 @@ exports.updateProject = async (req, res) => {
 
     res.status(200).json({ message: 'Project updated successfully', project });
   } catch (error) {
+    if (error?.message?.includes('MONGODB_URI is not configured')) {
+      return res.status(503).json({
+        message: 'Projects service is unavailable. Database is not configured.',
+      });
+    }
+
+    if (isDatabaseUnavailableError(error)) {
+      return res.status(503).json({
+        message: 'Projects service is unavailable. Cannot connect to database.',
+      });
+    }
+
     res.status(500).json({ message: 'Error updating project', error: error.message });
   }
 };
@@ -107,6 +202,10 @@ exports.updateProject = async (req, res) => {
 // @access  Public (In production, you should add authentication)
 exports.deleteProject = async (req, res) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid project ID format' });
+    }
+
     await connectDB();
 
     const project = await Project.findByIdAndDelete(req.params.id);
@@ -117,6 +216,18 @@ exports.deleteProject = async (req, res) => {
 
     res.status(200).json({ message: 'Project deleted successfully' });
   } catch (error) {
+    if (error?.message?.includes('MONGODB_URI is not configured')) {
+      return res.status(503).json({
+        message: 'Projects service is unavailable. Database is not configured.',
+      });
+    }
+
+    if (isDatabaseUnavailableError(error)) {
+      return res.status(503).json({
+        message: 'Projects service is unavailable. Cannot connect to database.',
+      });
+    }
+
     res.status(500).json({ message: 'Error deleting project', error: error.message });
   }
 };

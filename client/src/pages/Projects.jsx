@@ -32,7 +32,15 @@ function Projects() {
   // Function to fetch projects from the backend API
   const fetchProjects = async () => {
     try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/api/projects`);
+      const apiBaseUrl = process.env.REACT_APP_API_URL;
+
+      if (!apiBaseUrl) {
+        throw new Error('REACT_APP_API_URL is not configured');
+      }
+
+      const response = await axios.get(`${apiBaseUrl}/api/projects`, {
+        timeout: 3000,
+      });
       const projectList = Array.isArray(response.data) ? response.data : [];
       const hasDhakaBus = projectList.some(
         (project) =>
@@ -44,7 +52,11 @@ function Projects() {
       setError(null);
     } catch (err) {
       console.error('Error fetching projects:', err);
-      setError('Failed to load projects');
+      if (err?.message === 'REACT_APP_API_URL is not configured') {
+        setError('Projects service is not configured yet.');
+      } else {
+        setError('Failed to load projects');
+      }
       // Set dummy data if API fails (for demo purposes)
       setProjects([
         {

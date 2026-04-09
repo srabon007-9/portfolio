@@ -1,9 +1,14 @@
 // Import the Contact model
+const mongoose = require('mongoose');
 const Contact = require('../models/Contact');
 const connectDB = require('../config/database');
 const { sendContactNotificationEmail } = require('../utils/emailService');
 
 // Controller functions handle the business logic for contact routes
+const isDatabaseUnavailableError = (error) =>
+  error?.name === 'MongooseServerSelectionError' ||
+  error?.name === 'MongoServerSelectionError' ||
+  error?.message?.toLowerCase?.().includes('could not connect to any servers');
 
 // @desc    Get all contact messages
 // @route   GET /api/contact
@@ -23,12 +28,7 @@ exports.getContactMessages = async (req, res) => {
       });
     }
 
-    if (
-      error?.name === 'MongooseServerSelectionError' ||
-      error?.name === 'MongoServerSelectionError' ||
-      error?.message?.toLowerCase?.().includes('could not connect to any servers') ||
-      error?.message?.toLowerCase?.().includes('whitelist')
-    ) {
+    if (isDatabaseUnavailableError(error) || error?.message?.toLowerCase?.().includes('whitelist')) {
       return res.status(503).json({
         message:
           'Admin inbox unavailable: cannot connect to MongoDB Atlas. Check Atlas Network Access and Vercel environment variables.',
@@ -48,9 +48,13 @@ exports.createContactMessage = async (req, res) => {
 
     // Destructure the data from the request body
     const { name, email, subject, message } = req.body;
+    const normalizedName = String(name || '').trim();
+    const normalizedEmail = String(email || '').trim().toLowerCase();
+    const normalizedSubject = String(subject || '').trim();
+    const normalizedMessage = String(message || '').trim();
 
     // Validate required fields
-    if (!name || !email || !message) {
+    if (!normalizedName || !normalizedEmail || !normalizedMessage) {
       return res.status(400).json({
         message: 'Name, email, and message are required',
       });
@@ -58,10 +62,10 @@ exports.createContactMessage = async (req, res) => {
 
     // Create a new contact message
     const contact = new Contact({
-      name,
-      email,
-      subject,
-      message,
+      name: normalizedName,
+      email: normalizedEmail,
+      subject: normalizedSubject,
+      message: normalizedMessage,
     });
 
     // Save to the database with timeout guard to avoid 408s
@@ -77,10 +81,10 @@ exports.createContactMessage = async (req, res) => {
     let notificationReason = null;
     try {
       const emailResult = await sendContactNotificationEmail({
-        name,
-        email,
-        subject,
-        message,
+        name: normalizedName,
+        email: normalizedEmail,
+        subject: normalizedSubject,
+        message: normalizedMessage,
         createdAt: savedContact?.createdAt,
       });
       notificationSent = Boolean(emailResult?.sent);
@@ -113,7 +117,7 @@ exports.createContactMessage = async (req, res) => {
       });
     }
 
-    if (error?.name === 'MongooseServerSelectionError' || error?.name === 'MongoServerSelectionError') {
+    if (isDatabaseUnavailableError(error)) {
       return res.status(503).json({
         message: 'Contact service is temporarily unavailable. Cannot connect to database.',
       });
@@ -137,6 +141,10 @@ exports.createContactMessage = async (req, res) => {
 // @access  Public (In production, only admin should access this)
 exports.markAsRead = async (req, res) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid message ID format' });
+    }
+
     await connectDB();
 
     const contact = await Contact.findByIdAndUpdate(
@@ -151,11 +159,7 @@ exports.markAsRead = async (req, res) => {
 
     res.status(200).json({ message: 'Message marked as read', contact });
   } catch (error) {
-    if (
-      error?.name === 'MongooseServerSelectionError' ||
-      error?.name === 'MongoServerSelectionError' ||
-      error?.message?.toLowerCase?.().includes('could not connect to any servers')
-    ) {
+    if (isDatabaseUnavailableError(error)) {
       return res.status(503).json({
         message: 'Cannot update message status: database connection unavailable.',
       });
@@ -170,6 +174,10 @@ exports.markAsRead = async (req, res) => {
 // @access  Public (In production, only admin should access this)
 exports.markAsUnread = async (req, res) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid message ID format' });
+    }
+
     await connectDB();
 
     const contact = await Contact.findByIdAndUpdate(
@@ -184,11 +192,7 @@ exports.markAsUnread = async (req, res) => {
 
     res.status(200).json({ message: 'Message marked as unread', contact });
   } catch (error) {
-    if (
-      error?.name === 'MongooseServerSelectionError' ||
-      error?.name === 'MongoServerSelectionError' ||
-      error?.message?.toLowerCase?.().includes('could not connect to any servers')
-    ) {
+    if (isDatabaseUnavailableError(error)) {
       return res.status(503).json({
         message: 'Cannot update message status: database connection unavailable.',
       });
@@ -212,11 +216,7 @@ exports.markAllAsRead = async (req, res) => {
       modifiedCount: result.modifiedCount || 0,
     });
   } catch (error) {
-    if (
-      error?.name === 'MongooseServerSelectionError' ||
-      error?.name === 'MongoServerSelectionError' ||
-      error?.message?.toLowerCase?.().includes('could not connect to any servers')
-    ) {
+    if (isDatabaseUnavailableError(error)) {
       return res.status(503).json({
         message: 'Cannot update messages: database connection unavailable.',
       });
@@ -231,6 +231,10 @@ exports.markAllAsRead = async (req, res) => {
 // @access  Public (In production, only admin should access this)
 exports.deleteContactMessage = async (req, res) => {
   try {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+      return res.status(400).json({ message: 'Invalid message ID format' });
+    }
+
     await connectDB();
 
     const contact = await Contact.findByIdAndDelete(req.params.id);
@@ -241,11 +245,7 @@ exports.deleteContactMessage = async (req, res) => {
 
     res.status(200).json({ message: 'Message deleted successfully' });
   } catch (error) {
-    if (
-      error?.name === 'MongooseServerSelectionError' ||
-      error?.name === 'MongoServerSelectionError' ||
-      error?.message?.toLowerCase?.().includes('could not connect to any servers')
-    ) {
+    if (isDatabaseUnavailableError(error)) {
       return res.status(503).json({
         message: 'Cannot delete message: database connection unavailable.',
       });
